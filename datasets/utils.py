@@ -1,5 +1,3 @@
-import torch
-
 import numpy as np
 from SimpleITK import SimpleITK
 
@@ -26,7 +24,8 @@ def load_label(label_dir):
 
     return label
 
-def reshape(orig_img, original_spacing, append_value=-1024, new_shape=(512,512,512)):
+
+def reshape(orig_img, original_spacing, append_value=-1024, new_shape=(512, 512, 512)):
     orig_img = SimpleITK.GetImageFromArray(orig_img)
 
     original_size = orig_img.GetSize()

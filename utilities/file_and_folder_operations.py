@@ -1,5 +1,6 @@
 import os
 
+
 def subdirs(folder, join=True, prefix=None, suffix=None, sort=True):
     if join:
         l = os.path.join
@@ -12,6 +13,7 @@ def subdirs(folder, join=True, prefix=None, suffix=None, sort=True):
         res.sort()
     return res
 
+
 def subfiles(folder, join=True, prefix=None, suffix=None, sort=True):
     if join:
         l = os.path.join
@@ -23,6 +25,7 @@ def subfiles(folder, join=True, prefix=None, suffix=None, sort=True):
     if sort:
         res.sort()
     return res
+
 
 def maybe_mkdir_p(directory):
     splits = directory.split("/")[1:]

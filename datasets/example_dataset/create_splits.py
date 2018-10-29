@@ -1,23 +1,22 @@
 import pickle
-from collections import defaultdict
+from utilities.file_and_folder_operations import subfiles
 
 import os
 import numpy as np
 
 root_dir = "/media/kleina/Data/Data/Hippocampus"
-image_dir = os.path.join(root_dir, 'preprocessed')
+image_dir = os.path.join(root_dir, 'preprocessed_bla')
 
 output_dir = root_dir
 
-from utilities.file_and_folder_operations import subfiles
 npy_files = subfiles(image_dir, suffix=".npy", join=False)
 
 trainset_size = len(npy_files)*50//100
 valset_size = len(npy_files)*25//100
 testset_size = len(npy_files)*25//100
 
-splits=[]
-for split in range(0,5):
+splits = []
+for split in range(0, 5):
     image_list = npy_files.copy()
     trainset = []
     valset = []

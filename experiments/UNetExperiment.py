@@ -9,7 +9,6 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torch.nn.functional as F
 
-from evaluation.evaluator import Evaluator, aggregate_scores
 from datasets.NumpyDataLoader import NumpyDataSet
 from trixi.experiment.pytorchexperiment import PytorchExperiment
 from networks.UNET import UNet
@@ -45,12 +44,12 @@ class UNetExperiment(PytorchExperiment):
         test_keys = splits[self.config.fold]['test']
 
         self.train_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
-                                              keys=tr_keys, additional_slices=self.config.additional_slices)
+                                              keys=tr_keys)
         self.val_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
-                                            keys=val_keys, mode="val", do_reshuffle=False, additional_slices=self.config.additional_slices)
+                                            keys=val_keys, mode="val", do_reshuffle=False)
         self.test_data_loader = NumpyDataSet(self.config.data_test_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
-                                             keys=test_keys, mode="test", do_reshuffle=False, additional_slices=self.config.additional_slices)
-        self.model = UNet(num_classes=3, in_channels=self.config.additional_slices*2 + 1, do_batchnorm=self.config.do_batchnorm)
+                                             keys=test_keys, mode="test", do_reshuffle=False)
+        self.model = UNet(num_classes=3, in_channels= 1, do_batchnorm=self.config.do_batchnorm)
         if self.config.use_cuda:
             self.model.cuda()
 
@@ -102,7 +101,7 @@ class UNetExperiment(PytorchExperiment):
 
                 self.add_result(value=loss.item(), name='Train_Loss',   label='Loss', counter=epoch + (batch_counter / self.train_data_loader.data_loader.num_batches))
 
-                self.clog.show_image_grid(data[:, self.config.additional_slices:self.config.additional_slices+1, ].float(), name="data", normalize=True, scale_each=True, n_iter=epoch)
+                self.clog.show_image_grid(data.float(), name="data", normalize=True, scale_each=True, n_iter=epoch)
                 self.clog.show_image_grid(target.float(), name="mask", title="Mask", n_iter=epoch)
                 self.clog.show_image_grid(torch.argmax(pred.data.cpu(), dim=1, keepdim=True), name="unt_argmax", title="Unet", n_iter=epoch)
                 self.clog.show_image_grid(pred.data.cpu()[:, 1:2, ], name="unt", normalize=True, scale_each=True, n_iter=epoch)
@@ -132,40 +131,11 @@ class UNetExperiment(PytorchExperiment):
 
         self.add_result(value=np.mean(loss_list), name='Val_Loss', label='Loss', counter=epoch+1)
 
-        self.clog.show_image_grid(data[:, self.config.additional_slices:self.config.additional_slices+1, ].float(), name="data_val", normalize=True, scale_each=True, n_iter=epoch)
+        self.clog.show_image_grid(data.float(), name="data_val", normalize=True, scale_each=True, n_iter=epoch)
         self.clog.show_image_grid(target.float(), name="mask_val", title="Mask", n_iter=epoch)
         self.clog.show_image_grid(torch.argmax(pred.data.cpu(), dim=1, keepdim=True), name="unt_argmax_val", title="Unet", n_iter=epoch)
         self.clog.show_image_grid(pred.data.cpu()[:, 1:2, ], name="unt_val", normalize=True, scale_each=True, n_iter=epoch)
 
     def test(self):
-        self.elog.print('TEST')
-        self.model.eval()
-
-        pred_dict = defaultdict(list)
-        gt_dict = defaultdict(list)
-
-        batch_counter = 0
-        with torch.no_grad():
-            for data_batch in self.test_data_loader:
-                print('testing...', batch_counter)
-                batch_counter += 1
-
-                data = data_batch['data'][0][:, 0, ].float().cuda()
-                target = data_batch['seg'][0][:, :, self.config.additional_slices, ].long().cuda()
-
-                pred = self.model(data)
-                pred_argmax = torch.argmax(pred.data.cpu(), dim=1, keepdim=True)
-
-                fnames = data_batch['fnames']
-                for i, fname in enumerate(fnames):
-                    pred_dict[fname[0]].append(pred_argmax[i].detach().cpu().numpy())
-                    gt_dict[fname[0]].append(target[i].detach().cpu().numpy())
-
-        test_ref_list = []
-        for key in pred_dict.keys():
-            test_ref_list.append((np.stack(pred_dict[key]), np.stack(gt_dict[key])))
-
-        scores = aggregate_scores(test_ref_list, evaluator=Evaluator, json_author='kleina', json_task=self.config.name, json_name=self.config.name,
-                                  json_output_file=self.elog.work_dir + "/kleina_" + self.config.name + '.json')
-
-        print("Scores:\n", scores)
+        # TODO
+        print('TODO: test() is not implemented yet.')
