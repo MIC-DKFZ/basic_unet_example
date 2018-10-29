@@ -8,7 +8,7 @@ def get_transforms(mode="train", target_size=128):
     tranform_list = []
 
     if mode == "train":
-        tranform_list = [CenterCropTransform(crop_size=(target_size, target_size)),
+        tranform_list = [RandomCropTransform(crop_size=(target_size, target_size)),
                          ResizeTransform(target_size=(target_size, target_size), order=1),
                          MirrorTransform(axes=(2,)),
                          SpatialTransform(patch_size=(target_size, target_size), random_crop=False,
