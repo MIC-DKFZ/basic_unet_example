@@ -32,7 +32,7 @@ def get_config():
     # Adapt these paths for your environment!
     c.base_dir = '/media/kleina/Data/output/unet_example/'  # Where to log the output of the experiment.
 
-    c.data_root_dir = '/media/kleina/Data/Data/example_unet_dataset/'
+    c.data_root_dir = '/media/kleina/Data/Data/example_unet_dataset/'  # The path where the downloaded dataset is stored.
     c.data_dir = os.path.join(c.data_root_dir, 'Task04_Hippocampus/preprocessed')  # This is where your training and validation data is stored
     c.data_test_dir = os.path.join(c.data_root_dir, 'Task04_Hippocampus/preprocessed')  # This is where your test data is stored
 
