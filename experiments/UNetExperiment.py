@@ -1,9 +1,6 @@
 import os
 import pickle
-from collections import defaultdict
-
 import numpy as np
-
 import torch
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
@@ -80,8 +77,7 @@ class UNetExperiment(PytorchExperiment):
 
             self.optimizer.zero_grad()
 
-            # TODO
-            # Shape of data_batch = [1, b, c, no_of_additional_slices, w, h]
+            # Shape of data_batch = [1, b, c, w, h]
             # Desired shape = [b, c, w, h]
             # Move data and target to the GPU
             data = data_batch['data'][0].float().cuda()
@@ -99,7 +95,7 @@ class UNetExperiment(PytorchExperiment):
             if (batch_counter % self.config.plot_freq) == 0:
                 self.elog.print('Epoch: %d Loss: %.4f' % (self._epoch_idx, loss))
 
-                self.add_result(value=loss.item(), name='Train_Loss',   label='Loss', counter=epoch + (batch_counter / self.train_data_loader.data_loader.num_batches))
+                self.add_result(value=loss.item(), name='Train_Loss', tag='Loss', counter=epoch + (batch_counter / self.train_data_loader.data_loader.num_batches))
 
                 self.clog.show_image_grid(data.float(), name="data", normalize=True, scale_each=True, n_iter=epoch)
                 self.clog.show_image_grid(target.float(), name="mask", title="Mask", n_iter=epoch)
@@ -129,7 +125,7 @@ class UNetExperiment(PytorchExperiment):
 
         self.elog.print('Epoch: %d Loss: %.4f' % (self._epoch_idx, np.mean(loss_list)))
 
-        self.add_result(value=np.mean(loss_list), name='Val_Loss', label='Loss', counter=epoch+1)
+        self.add_result(value=np.mean(loss_list), name='Val_Loss', tag='Loss', counter=epoch+1)
 
         self.clog.show_image_grid(data.float(), name="data_val", normalize=True, scale_each=True, n_iter=epoch)
         self.clog.show_image_grid(target.float(), name="mask_val", title="Mask", n_iter=epoch)

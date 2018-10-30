@@ -1,7 +1,7 @@
 from batchgenerators.transforms import Compose, MirrorTransform
 from batchgenerators.transforms.crop_and_pad_transforms import CenterCropTransform, RandomCropTransform
 from batchgenerators.transforms.spatial_transforms import ResizeTransform, SpatialTransform
-from batchgenerators.transforms.utility_transforms import NumpyToTensor, ReshapeTransform
+from batchgenerators.transforms.utility_transforms import NumpyToTensor
 
 
 def get_transforms(mode="train", target_size=128):
@@ -23,8 +23,6 @@ def get_transforms(mode="train", target_size=128):
     elif mode == "val":
         tranform_list = [CenterCropTransform(crop_size=(target_size, target_size)),
                          ResizeTransform(target_size=(target_size, target_size), order=1),
-                         # BrightnessTransform(mu=0, sigma=0.2),
-                         # BrightnessMultiplicativeTransform(multiplier_range=(0.95, 1.1)),
                          ]
 
     tranform_list.append(NumpyToTensor())

@@ -32,7 +32,6 @@ def preprocess_data(root_dir):
         label, _ = load(os.path.join(label_dir, f.replace('_0000', '')))
 
         print(f)
-        print(image.shape)
 
         for i in range(classes):
             class_stats[i] += np.sum(label == i)
@@ -40,8 +39,8 @@ def preprocess_data(root_dir):
 
         image = (image - image.min())/(image.max()-image.min())
 
-        image = reshape(image, (1, 1, 1), append_value=0, new_shape=(64, 64, 64))
-        label = reshape(label, (1, 1, 1), append_value=0, new_shape=(64, 64, 64))
+        image = reshape(image, append_value=0, new_shape=(64, 64, 64))
+        label = reshape(label, append_value=0, new_shape=(64, 64, 64))
 
         result = np.stack((image, label))
 

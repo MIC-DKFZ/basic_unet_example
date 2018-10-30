@@ -13,14 +13,14 @@ def get_config():
         c.use_cuda = False
 
     # Train parameters
-    c.batch_size = 8
+    c.batch_size = 32
     c.patch_size = 64
     c.n_epochs = 100
     c.learning_rate = 0.0002
     c.fold = 0  # The 'splits.pkl' may contain multiple folds. Here we choose which one we want to use.
 
     # Logging parameters
-    c.name = 'Basic_seg'
+    c.name = 'Basic_Unet'
     c.plot_freq = 10  # How often should stuff be shown in visdom
     c.append_rnd_string = False
     c.start_visdom = True
