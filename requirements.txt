@@ -4,5 +4,5 @@ SimpleITK==1.1.0
 torch==0.4.1
 torchfile==0.1.0
 torchvision==0.2.1
--e git+https://phabricator.mitk.org/source/trixi.git#egg=trixi
+-e git+https://github.com/MIC-DKFZ/trixi.git#egg=trixi
 -e git+https://github.com/MIC-DKFZ/batchgenerators#egg=batchgenerators
