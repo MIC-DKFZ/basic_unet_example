@@ -4,23 +4,23 @@ import torch.nn as nn
 
 class UNet(nn.Module):
 
-    def __init__(self, num_classes, in_channels=1, initial_filter_size=64, kernel_size=3, do_batchnorm=True):
+    def __init__(self, num_classes, in_channels=1, initial_filter_size=64, kernel_size=3, do_instancenorm=True):
         super().__init__()
 
-        self.contr_1_1 = self.contract(in_channels, initial_filter_size, kernel_size, batchnorm=do_batchnorm)
-        self.contr_1_2 = self.contract(initial_filter_size, initial_filter_size, kernel_size, batchnorm=do_batchnorm)
+        self.contr_1_1 = self.contract(in_channels, initial_filter_size, kernel_size, instancenorm=do_instancenorm)
+        self.contr_1_2 = self.contract(initial_filter_size, initial_filter_size, kernel_size, instancenorm=do_instancenorm)
         self.pool = nn.MaxPool2d(2, stride=2)
 
-        self.contr_2_1 = self.contract(initial_filter_size, initial_filter_size*2, kernel_size, batchnorm=do_batchnorm)
-        self.contr_2_2 = self.contract(initial_filter_size*2, initial_filter_size*2, kernel_size, batchnorm=do_batchnorm)
+        self.contr_2_1 = self.contract(initial_filter_size, initial_filter_size*2, kernel_size, instancenorm=do_instancenorm)
+        self.contr_2_2 = self.contract(initial_filter_size*2, initial_filter_size*2, kernel_size, instancenorm=do_instancenorm)
         # self.pool2 = nn.MaxPool2d(2, stride=2)
 
-        self.contr_3_1 = self.contract(initial_filter_size*2, initial_filter_size*2**2, kernel_size, batchnorm=do_batchnorm)
-        self.contr_3_2 = self.contract(initial_filter_size*2**2, initial_filter_size*2**2, kernel_size, batchnorm=do_batchnorm)
+        self.contr_3_1 = self.contract(initial_filter_size*2, initial_filter_size*2**2, kernel_size, instancenorm=do_instancenorm)
+        self.contr_3_2 = self.contract(initial_filter_size*2**2, initial_filter_size*2**2, kernel_size, instancenorm=do_instancenorm)
         # self.pool3 = nn.MaxPool2d(2, stride=2)
 
-        self.contr_4_1 = self.contract(initial_filter_size*2**2, initial_filter_size*2**3, kernel_size, batchnorm=do_batchnorm)
-        self.contr_4_2 = self.contract(initial_filter_size*2**3, initial_filter_size*2**3, kernel_size, batchnorm=do_batchnorm)
+        self.contr_4_1 = self.contract(initial_filter_size*2**2, initial_filter_size*2**3, kernel_size, instancenorm=do_instancenorm)
+        self.contr_4_2 = self.contract(initial_filter_size*2**3, initial_filter_size*2**3, kernel_size, instancenorm=do_instancenorm)
         # self.pool4 = nn.MaxPool2d(2, stride=2)
 
         self.center = nn.Sequential(
@@ -55,11 +55,11 @@ class UNet(nn.Module):
         self.output_reconstruction_map = nn.Conv2d(initial_filter_size, out_channels=1, kernel_size=1)
 
     @staticmethod
-    def contract(in_channels, out_channels, kernel_size=3, batchnorm=True):
-        if batchnorm:
+    def contract(in_channels, out_channels, kernel_size=3, instancenorm=True):
+        if instancenorm:
             layer = nn.Sequential(
                 nn.Conv2d(in_channels, out_channels, kernel_size, padding=1),
-                nn.BatchNorm2d(out_channels),
+                nn.InstanceNorm2d(out_channels),
                 nn.LeakyReLU(inplace=True))
         else:
             layer = nn.Sequential(

@@ -25,7 +25,7 @@ def get_config():
     c.append_rnd_string = False
     c.start_visdom = True
 
-    c.do_batchnorm = True  # Defines whether or not the UNet does a batchnorm in the contracting path
+    c.do_instancenorm = True  # Defines whether or not the UNet does a instancenorm in the contracting path
     c.do_load_checkpoint = False
     c.checkpoint_dir = ''
 
