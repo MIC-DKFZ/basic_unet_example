@@ -34,7 +34,7 @@ def get_config():
         learning_rate=0.0002,
         fold=0,  # The 'splits.pkl' may contain multiple folds. Here we choose which one we want to use.
 
-        device="cuda",  # TODO
+        device="cuda",  # 'cuda' is the default CUDA device, you can use also 'cpu'. For more information, see https://pytorch.org/docs/stable/notes/cuda.html
 
         # Logging parameters
         name='Basic_Unet',

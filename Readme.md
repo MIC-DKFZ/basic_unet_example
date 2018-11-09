@@ -1,5 +1,5 @@
 # basic_unet_example example by MIC@DKFZ
-This python package is an example project of how to use a U-Net (Ronneberger et al.) for segmentation on medical images.
+This python package is an example project of how to use a U-Net (Ronneberger et al.) for segmentation on medical images using PyTorch (https://www.pytorch.org).
 It was developed at the Division of Medical Image Computing at the German Cancer
 Research Center (DKFZ).
 It is also an example on how to use our other python packages batchgenerators (https://github.com/MIC-DKFZ/batchgenerators) and Trixi (https://trixi.readthedocs.io) to suit all our deep learning data augmentation needs.
