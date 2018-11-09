@@ -1,42 +1,43 @@
 import os
 
-import torch
 from trixi.util import Config
 
 
 def get_config():
-    c = Config()
+    # TODO
+    data_root_dir = os.path.abspath('data')  # The path where the downloaded dataset is stored.
 
-    if torch.cuda.is_available():
-        c.use_cuda = True
-    else:
-        c.use_cuda = False
+    c = Config(
+        update_from_argv=True,
 
-    # Train parameters
-    c.batch_size = 32
-    c.patch_size = 64
-    c.n_epochs = 10
-    c.learning_rate = 0.0002
-    c.fold = 0  # The 'splits.pkl' may contain multiple folds. Here we choose which one we want to use.
+        # Train parameters
+        batch_size=32,
+        patch_size=64,
+        n_epochs=10,
+        learning_rate=0.0002,
+        fold=0,  # The 'splits.pkl' may contain multiple folds. Here we choose which one we want to use.
 
-    # Logging parameters
-    c.name = 'Basic_Unet'
-    c.plot_freq = 10  # How often should stuff be shown in visdom
-    c.append_rnd_string = False
-    c.start_visdom = True
+        device="cuda",  # TODO
 
-    c.do_instancenorm = True  # Defines whether or not the UNet does a instance normalization in the contracting path
-    c.do_load_checkpoint = False
-    c.checkpoint_dir = ''
+        # Logging parameters
+        name='Basic_Unet',
+        plot_freq=10,  # How often should stuff be shown in visdom
+        append_rnd_string=False,
+        start_visdom=True,
 
-    # Adapt these paths for your environment!
-    c.base_dir = '/media/kleina/Data/output/unet_example/'  # Where to log the output of the experiment.
+        do_instancenorm=True,  # Defines whether or not the UNet does a instance normalization in the contracting path
+        do_load_checkpoint=False,
+        checkpoint_dir='',
 
-    c.data_root_dir = '/media/kleina/Data/Data/example_unet_dataset/'  # The path where the downloaded dataset is stored.
-    c.data_dir = os.path.join(c.data_root_dir, 'Task04_Hippocampus/preprocessed')  # This is where your training and validation data is stored
-    c.data_test_dir = os.path.join(c.data_root_dir, 'Task04_Hippocampus/preprocessed')  # This is where your test data is stored
+        # Adapt this paths for your environment!
+        base_dir=os.path.abspath('output_experiment'),  # Where to log the output of the experiment.
 
-    c.split_dir = os.path.join(c.data_root_dir, 'Task04_Hippocampus')   # This is where the 'splits.pkl' file is located, that holds your splits.
+        data_root_dir=data_root_dir,  # The path where the downloaded dataset is stored.
+        data_dir=os.path.join(data_root_dir, 'Task04_Hippocampus/preprocessed'),  # This is where your training and validation data is stored
+        data_test_dir=os.path.join(data_root_dir, 'Task04_Hippocampus/preprocessed'),  # This is where your test data is stored
+
+        split_dir=os.path.join(data_root_dir, 'Task04_Hippocampus')  # This is where the 'splits.pkl' file is located, that holds your splits.
+    )
 
     print(c)
     return c

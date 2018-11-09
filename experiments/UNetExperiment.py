@@ -43,6 +43,8 @@ class UNetExperiment(PytorchExperiment):
         val_keys = splits[self.config.fold]['val']
         test_keys = splits[self.config.fold]['test']
 
+        self.device = torch.device(self.config.device if torch.cuda.is_available() else "cpu")
+
         self.train_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
                                               keys=tr_keys)
         self.val_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
@@ -50,8 +52,9 @@ class UNetExperiment(PytorchExperiment):
         self.test_data_loader = NumpyDataSet(self.config.data_test_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
                                              keys=test_keys, mode="val", do_reshuffle=False)
         self.model = UNet(num_classes=3, in_channels= 1, do_instancenorm=self.config.do_instancenorm)
-        if self.config.use_cuda:
-            self.model.cuda()
+
+
+        self.model.to(self.device)
 
         # We use a combination of DICE-loss and CE-Loss in this example.
         # This proved good in the medical segmentation decathlon.
@@ -83,8 +86,8 @@ class UNetExperiment(PytorchExperiment):
             # Shape of data_batch = [1, b, c, w, h]
             # Desired shape = [b, c, w, h]
             # Move data and target to the GPU
-            data = data_batch['data'][0].float().cuda()
-            target = data_batch['seg'][0].long().cuda()
+            data = data_batch['data'][0].float().to(self.device)
+            target = data_batch['seg'][0].long().to(self.device)
 
             pred = self.model(data)
             pred_softmax = F.softmax(pred)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
@@ -102,8 +105,8 @@ class UNetExperiment(PytorchExperiment):
 
                 self.clog.show_image_grid(data.float(), name="data", normalize=True, scale_each=True, n_iter=epoch)
                 self.clog.show_image_grid(target.float(), name="mask", title="Mask", n_iter=epoch)
-                self.clog.show_image_grid(torch.argmax(pred.data.cpu(), dim=1, keepdim=True), name="unt_argmax", title="Unet", n_iter=epoch)
-                self.clog.show_image_grid(pred.data.cpu()[:, 1:2, ], name="unt", normalize=True, scale_each=True, n_iter=epoch)
+                self.clog.show_image_grid(torch.argmax(pred.cpu(), dim=1, keepdim=True), name="unt_argmax", title="Unet", n_iter=epoch)
+                self.clog.show_image_grid(pred.cpu()[:, 1:2, ], name="unt", normalize=True, scale_each=True, n_iter=epoch)
 
             batch_counter += 1
 
@@ -117,8 +120,8 @@ class UNetExperiment(PytorchExperiment):
 
         with torch.no_grad():
             for data_batch in self.val_data_loader:
-                data = data_batch['data'][0].float().cuda()
-                target = data_batch['seg'][0].long().cuda()
+                data = data_batch['data'][0].float().to(self.device)
+                target = data_batch['seg'][0].long().to(self.device)
 
                 pred = self.model(data)
                 pred_softmax = F.softmax(pred)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
