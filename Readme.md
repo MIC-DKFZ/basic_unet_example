@@ -13,7 +13,14 @@ mkvirtualenv unet_example
 pip install -r requirements.txt
 ```
 
+After setting up the virtual environment you have to start visdom once so it can download some needed files. You only
+have to do that once. You can stop the visdom server after a few seconds when it finished downloading the files.
+```
+python -m visdom.server
+```
+
 You can edit the paths for data storage and logging in the config file. By default, everything is stored in your working directory.
+
 
 ## How to use it
 To start the training simply run 
@@ -25,6 +32,10 @@ This will download the Hippocampus dataset from the medical segmentation decathl
 extract and preprocess it and then start the training.
 
 If you run the pipeline again, the dataset will not be downloaded, extracted or preprocessed again. To enforce it, just delete the folder.
+
+It will automatically visualize the training process using trixi/visdom. After starting the training you navigate 
+in your browser to the port which it printed by the training script. Then you should see your learning rate and so on.
+
 
 
 ## How to use it for your own data
