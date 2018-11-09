@@ -16,6 +16,7 @@
 # limitations under the License.
 
 import os
+from os.path import exists
 
 from configs.Config_unet import get_config
 from datasets.example_dataset.create_splits import create_splits
@@ -28,8 +29,13 @@ c = get_config()
 dataset_name = 'Task04_Hippocampus'
 download_dataset(dest_path=c.data_root_dir, dataset=dataset_name)
 
-preprocess_data(root_dir=os.path.join(c.data_root_dir, dataset_name))
-create_splits(output_dir=c.split_dir, image_dir=c.data_dir)
+if not exists(os.path.join(os.path.join(c.data_root_dir, dataset_name), 'preprocessed')):
+    print('Preprocessing data. [STARTED]')
+    preprocess_data(root_dir=os.path.join(c.data_root_dir, dataset_name))
+    create_splits(output_dir=c.split_dir, image_dir=c.data_dir)
+    print('Preprocessing data. [DONE]')
+else:
+    print('Data already preprocessed. Will not be preprocessed again. Delete Folder to enforce it.')
 
 exp = UNetExperiment(config=c, name='unet_experiment', n_epochs=c.n_epochs,
                      seed=42, append_rnd_to_name=c.append_rnd_string, visdomlogger_kwargs={"auto_start": c.start_visdom})

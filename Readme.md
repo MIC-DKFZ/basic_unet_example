@@ -24,6 +24,9 @@ python run_train_pipeline.py
 This will download the Hippocampus dataset from the medical segmentation decathlon (http://medicaldecathlon.com),
 extract and preprocess it and then start the training.
 
+If you run the pipeline again, the dataset will not be downloaded, extracted or preprocessed again. To enforce it, just delete the folder.
+
+
 ## How to use it for your own data
 This is work in progress.
 

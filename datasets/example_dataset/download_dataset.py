@@ -16,6 +16,7 @@
 # limitations under the License.
 
 import os
+from os.path import exists
 import tarfile
 
 from google_drive_downloader import GoogleDriveDownloader as gdd
@@ -26,7 +27,12 @@ def download_dataset(dest_path, dataset):
                                         dest_path=tar_path, overwrite=False,
                                         unzip=False)
 
-    tar = tarfile.open(tar_path)
-    tar.extractall(dest_path)
+    if not exists(os.path.join(dest_path, dataset)):
+        print('Extracting data [STARTED]')
+        tar = tarfile.open(tar_path)
+        tar.extractall(dest_path)
+        print('Extracting data [DONE]')
+    else:
+        print('Data already downloaded. Files are not extracted again.')
 
     return
