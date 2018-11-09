@@ -31,6 +31,7 @@ This will download the Hippocampus dataset from the medical segmentation decathl
 extract and preprocess it and then start the training.
 
 ## How to use it for your own data
+This is work in progress.
 
 ### Config
 
