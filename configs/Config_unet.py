@@ -21,7 +21,7 @@ from trixi.util import Config
 
 
 def get_config():
-    # TODO
+    # Set your own path, if needed.
     data_root_dir = os.path.abspath('data')  # The path where the downloaded dataset is stored.
 
     c = Config(
@@ -46,7 +46,7 @@ def get_config():
         do_load_checkpoint=False,
         checkpoint_dir='',
 
-        # Adapt this paths for your environment!
+        # Adapt to your own path, if needed.
         base_dir=os.path.abspath('output_experiment'),  # Where to log the output of the experiment.
 
         data_root_dir=data_root_dir,  # The path where the downloaded dataset is stored.
