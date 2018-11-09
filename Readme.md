@@ -30,5 +30,26 @@ python run_train_pipeline.py
 This will download the Hippocampus dataset from the medical segmentation decathlon (http://medicaldecathlon.com),
 extract and preprocess it and then start the training.
 
-## Detailed description
-Todo
+## How to use it for your own data
+### Config
+
+The included Config_unet.py is an example config file. You have to adapt this to fit your local environment.
+
+Choose the "#Train parameters" to fit both, your data and your workstation. 
+With c.fold you can choose which split from your splits.pkl you want to use for the training.
+
+You also need to adapt the paths.
+
+## Datasets
+If you want to use the provided DataLoader, you need to preprocess your data in a appropriate way. An example can be found in the "example_dataset" folder.
+Make sure to load your images and your labels as numpy arrays. The required shape is (#slices, w,h). Then save both using:
+```
+result = np.stack((image, label))
+
+np.save(output_directory, result)
+```
+
+The provided DataLoader requires a splits.pkl file, that contains a dictionary of all the files used for training, validation and testing.
+It looks like this:
+```
+[{'train': ['dataset_name_1', 'dataset_name_2',...], 'val': ['dataset_name_3', ...], 'test': ['dataset_name_4', ...]}]

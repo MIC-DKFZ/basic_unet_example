@@ -1,5 +1,4 @@
 from torch.utils.data import DataLoader, Dataset
-
 from trixi.util.pytorchutils import set_seed
 
 

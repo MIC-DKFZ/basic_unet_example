@@ -141,11 +141,11 @@ class NumpyDataLoader(SlimDataLoaderBase):
 
             numpy_array = np.load(fn_name, mmap_mode="r")
 
-            numpy_slice = numpy_array[ :, slice[1], ]  # 'None' keeps the dimension
-            data.append(numpy_slice[None, self.input_slice[0]])
+            numpy_slice = numpy_array[ :, slice[1], ]
+            data.append(numpy_slice[None, self.input_slice[0]])   # 'None' keeps the dimension
 
             if self.label_slice is not None:
-                labels.append(numpy_slice[None, self.label_slice[0]])
+                labels.append(numpy_slice[None, self.label_slice[0]])   # 'None' keeps the dimension
 
             fnames.append(self.files[slice[0]])
             slice_idxs.append(slice[1])

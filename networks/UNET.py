@@ -125,10 +125,9 @@ class UNet(nn.Module):
 
         if enable_concat:
             output = self.final(expand)
-            # output = self.softmax(output)
         if not enable_concat:
             output = self.output_reconstruction_map(expand)
 
-        del contr_1, contr_2, contr_3, contr_4, pool, center, crop, concat, expand, upscale
+        # del contr_1, contr_2, contr_3, contr_4, pool, center, crop, concat, expand, upscale
 
         return output
