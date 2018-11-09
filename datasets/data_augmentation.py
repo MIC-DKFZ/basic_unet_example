@@ -37,7 +37,13 @@ def get_transforms(mode="train", target_size=128):
                                           border_mode_data="nearest", border_mode_seg="nearest"),
                          ]
 
+
     elif mode == "val":
+        tranform_list = [CenterCropTransform(crop_size=(target_size, target_size)),
+                         ResizeTransform(target_size=(target_size, target_size), order=1),
+                         ]
+
+    elif mode == "test":
         tranform_list = [CenterCropTransform(crop_size=(target_size, target_size)),
                          ResizeTransform(target_size=(target_size, target_size), order=1),
                          ]
