@@ -48,7 +48,7 @@ This is work in progress.
 The included `Config_unet.py` is an example config file. You have to adapt this to fit your local environment.
 
 Choose the `#Train parameters` to fit both, your data and your workstation. 
-With fold you can choose which split from your splits.pkl you want to use for the training.
+With `fold` you can choose which split from your `splits.pkl` you want to use for the training.
 
 You may also need to adapt the paths (`data_root_dir, data_dir, data_test_dir and split_dir`).
 
@@ -62,7 +62,7 @@ Then save both using:
 ```
 result = np.stack((image, label))
 
-np.save(output_directory, result)
+np.save(output_filename, result)
 ```
 
 The provided DataLoader requires a splits.pkl file, that contains a dictionary of all the files used for training, validation and testing.
