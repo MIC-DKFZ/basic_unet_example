@@ -31,6 +31,7 @@ This will download the Hippocampus dataset from the medical segmentation decathl
 extract and preprocess it and then start the training.
 
 ## How to use it for your own data
+
 ### Config
 
 The included Config_unet.py is an example config file. You have to adapt this to fit your local environment.
