@@ -93,10 +93,11 @@ class UNet(nn.Module):
         return layer
 
     @staticmethod
-    def center_crop(layer, target_size):
+    def center_crop(layer, target_width, target_height):
         batch_size, n_channels, layer_width, layer_height = layer.size()
-        xy1 = (layer_width - target_size) // 2
-        return layer[:, :, xy1:(xy1 + target_size), xy1:(xy1 + target_size)]
+        xy1 = (layer_width - target_width) // 2
+        xy2 = (layer_height - target_height) // 2
+        return layer[:, :, xy1:(xy1 + target_width), xy1:(xy1 + target_height)]
 
     def forward(self, x, enable_concat=True, print_layer_shapes=False):
         concat_weight = 1
@@ -117,25 +118,25 @@ class UNet(nn.Module):
 
         center = self.center(pool)
 
-        crop = self.center_crop(contr_4, center.size()[2])
+        crop = self.center_crop(contr_4, center.size()[2],center.size()[3])
         concat = torch.cat([center, crop*concat_weight], 1)
 
         expand = self.expand_4_2(self.expand_4_1(concat))
         upscale = self.upscale4(expand)
 
-        crop = self.center_crop(contr_3, upscale.size()[2])
+        crop = self.center_crop(contr_3, upscale.size()[2], upscale.size()[3])
         concat = torch.cat([upscale, crop*concat_weight], 1)
 
         expand = self.expand_3_2(self.expand_3_1(concat))
         upscale = self.upscale3(expand)
 
-        crop = self.center_crop(contr_2, upscale.size()[2])
+        crop = self.center_crop(contr_2, upscale.size()[2], upscale.size()[3])
         concat = torch.cat([upscale, crop*concat_weight], 1)
 
         expand = self.expand_2_2(self.expand_2_1(concat))
         upscale = self.upscale2(expand)
 
-        crop = self.center_crop(contr_1, upscale.size()[2])
+        crop = self.center_crop(contr_1, upscale.size()[2], upscale.size()[3])
         concat = torch.cat([upscale, crop*concat_weight], 1)
 
         expand = self.expand_1_2(self.expand_1_1(concat))

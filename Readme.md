@@ -4,7 +4,7 @@ PyTorch (https://www.pytorch.org).
 It was developed at the Division of Medical Image Computing at the German Cancer Research Center (DKFZ).
 It is also an example on how to use our other python packages batchgenerators (https://github.com/MIC-DKFZ/batchgenerators) and 
 Trixi (https://trixi.readthedocs.io) to suit all our deep learning data augmentation needs.
-If you encounter bug, feel free to contact us or open a github issue.
+If you encounter a bug, feel free to contact us or open a github issue.
 
 
 ## How to set it up

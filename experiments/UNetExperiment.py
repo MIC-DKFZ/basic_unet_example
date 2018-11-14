@@ -17,7 +17,6 @@
 
 import os
 import pickle
-from collections import defaultdict
 
 import numpy as np
 import torch
@@ -67,9 +66,8 @@ class UNetExperiment(PytorchExperiment):
         self.val_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
                                             keys=val_keys, mode="val", do_reshuffle=False)
         self.test_data_loader = NumpyDataSet(self.config.data_test_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
-                                             keys=test_keys, mode="val", do_reshuffle=False)
+                                             keys=test_keys, mode="test", do_reshuffle=False)
         self.model = UNet(num_classes=3, in_channels= 1, do_instancenorm=self.config.do_instancenorm)
-
 
         self.model.to(self.device)
 
