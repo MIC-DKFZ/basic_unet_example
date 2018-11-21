@@ -83,3 +83,9 @@ You can either edit the config file, or add comandline parameters like this:
 ```
 python train.py --n_epochs 100 [...]
 ```
+
+## Networks
+This example contains a simple implementation of the U-Net (Ronneberger et al.), which can be found in `networks>UNET.py`. 
+A little more generic version of the U-Net can be found in `networks>RecursiveUnet.py`. This implementation is donein a recursive way.
+It is therefor very easy to configure the number of downsamplings. Also the type of normaliation can be passed as a parameter (default is
+nn.InstanceNorm2d).
