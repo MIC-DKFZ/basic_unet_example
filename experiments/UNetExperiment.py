@@ -67,7 +67,7 @@ class UNetExperiment(PytorchExperiment):
                                             keys=val_keys, mode="val", do_reshuffle=False)
         self.test_data_loader = NumpyDataSet(self.config.data_test_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
                                              keys=test_keys, mode="test", do_reshuffle=False)
-        self.model = UNet(num_classes=3, in_channels= 1)
+        self.model = UNet(num_classes=3, in_channels=1)
 
         self.model.to(self.device)
 
@@ -157,4 +157,4 @@ class UNetExperiment(PytorchExperiment):
 
     def test(self):
         # TODO
-        print('TODO: test() is not implemented yet.')
+        print('TODO: Implement your test() method here')

@@ -97,7 +97,7 @@ class UNet(nn.Module):
         batch_size, n_channels, layer_width, layer_height = layer.size()
         xy1 = (layer_width - target_width) // 2
         xy2 = (layer_height - target_height) // 2
-        return layer[:, :, xy1:(xy1 + target_width), xy1:(xy1 + target_height)]
+        return layer[:, :, xy1:(xy1 + target_width), xy2:(xy2 + target_height)]
 
     def forward(self, x, enable_concat=True, print_layer_shapes=False):
         concat_weight = 1
@@ -118,7 +118,7 @@ class UNet(nn.Module):
 
         center = self.center(pool)
 
-        crop = self.center_crop(contr_4, center.size()[2],center.size()[3])
+        crop = self.center_crop(contr_4, center.size()[2], center.size()[3])
         concat = torch.cat([center, crop*concat_weight], 1)
 
         expand = self.expand_4_2(self.expand_4_1(concat))
@@ -145,7 +145,5 @@ class UNet(nn.Module):
             output = self.final(expand)
         if not enable_concat:
             output = self.output_reconstruction_map(expand)
-
-        # del contr_1, contr_2, contr_3, contr_4, pool, center, crop, concat, expand, upscale
 
         return output

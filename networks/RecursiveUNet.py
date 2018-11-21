@@ -9,17 +9,16 @@ from torch import nn
 
 
 class UNet(nn.Module):
-    def __init__(self, num_classes=3, in_channels=1, initial_filter_size=64, kernel_size=3, num_downs=5, norm_layer=nn.InstanceNorm2d):
+    def __init__(self, num_classes=3, in_channels=1, initial_filter_size=64, kernel_size=3, num_downs=4, norm_layer=nn.InstanceNorm2d):
         # norm_layer=nn.BatchNorm2d, use_dropout=False):
         super(UNet, self).__init__()
 
         # construct unet structure
-        exponent = num_downs - 1
-        unet_block = UnetSkipConnectionBlock(in_channels=initial_filter_size * 2 ** (exponent-1), out_channels=initial_filter_size * 2 ** (exponent),
+        unet_block = UnetSkipConnectionBlock(in_channels=initial_filter_size * 2 ** (num_downs-1), out_channels=initial_filter_size * 2 ** num_downs,
                                              num_classes=num_classes, kernel_size=kernel_size, norm_layer=norm_layer, innermost=True)
-        for i in range(1, exponent):
-            unet_block = UnetSkipConnectionBlock(in_channels=initial_filter_size * 2 ** (exponent-(i+1)),
-                                                 out_channels=initial_filter_size * 2 ** (exponent-i),
+        for i in range(1, num_downs):
+            unet_block = UnetSkipConnectionBlock(in_channels=initial_filter_size * 2 ** (num_downs-(i+1)),
+                                                 out_channels=initial_filter_size * 2 ** (num_downs-i),
                                                  num_classes=num_classes, kernel_size=kernel_size, submodule=unet_block, norm_layer=norm_layer)
         unet_block = UnetSkipConnectionBlock(in_channels=in_channels, out_channels=initial_filter_size,
                                              num_classes=num_classes, kernel_size=kernel_size, submodule=unet_block, norm_layer=norm_layer,
@@ -27,24 +26,24 @@ class UNet(nn.Module):
 
         self.model = unet_block
 
-    def forward(self, input):
-        return self.model(input)
+    def forward(self, x):
+        return self.model(x)
 
 
 # Defines the submodule with skip connection.
 # X -------------------identity---------------------- X
 #   |-- downsampling -- |submodule| -- upsampling --|
 class UnetSkipConnectionBlock(nn.Module):
-    def __init__(self, in_channels=None, out_channels=None, num_classes=1, initial_filter_size=64, kernel_size=3,
+    def __init__(self, in_channels=None, out_channels=None, num_classes=1, kernel_size=3,
                  submodule=None, outermost=False, innermost=False, norm_layer=nn.InstanceNorm2d, use_dropout=False):
         super(UnetSkipConnectionBlock, self).__init__()
         self.outermost = outermost
         # downconv
         pool = nn.MaxPool2d(2, stride=2)
-        conv1 = self.contract(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size)
-        conv2 = self.contract(in_channels=out_channels, out_channels=out_channels, kernel_size=kernel_size)
+        conv1 = self.contract(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, norm_layer=norm_layer)
+        conv2 = self.contract(in_channels=out_channels, out_channels=out_channels, kernel_size=kernel_size, norm_layer=norm_layer)
 
-        #upconv
+        # upconv
         conv3 = self.expand(in_channels=out_channels*2, out_channels=out_channels, kernel_size=kernel_size)
         conv4 = self.expand(in_channels=out_channels, out_channels=out_channels, kernel_size=kernel_size)
 
@@ -91,7 +90,7 @@ class UnetSkipConnectionBlock(nn.Module):
         batch_size, n_channels, layer_width, layer_height = layer.size()
         xy1 = (layer_width - target_width) // 2
         xy2 = (layer_height - target_height) // 2
-        return layer[:, :, xy1:(xy1 + target_width), xy1:(xy1 + target_height)]
+        return layer[:, :, xy1:(xy1 + target_width), xy2:(xy2 + target_height)]
 
     def forward(self, x):
         if self.outermost:
