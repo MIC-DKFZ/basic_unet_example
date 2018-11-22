@@ -38,6 +38,11 @@ If you run the pipeline again, the dataset will not be downloaded, extracted or 
 The training process will automatically be visualized using trixi/visdom. After starting the training you navigate 
 in your browser to the port which is printed by the training script. Then you should see your loss curve and so on.
 
+By default, a 2-dimensional U-Net is used. The example also comes with a 3-D version of the network (Özgün Cicek et al.).
+To use the 3-D version, simple use
+```
+python train3D.py
+```
 
 
 ## How to use it for your own data
@@ -86,6 +91,7 @@ python train.py --n_epochs 100 [...]
 
 ## Networks
 This example contains a simple implementation of the U-Net (Ronneberger et al.), which can be found in `networks>UNET.py`. 
-A little more generic version of the U-Net can be found in `networks>RecursiveUnet.py`. This implementation is donein a recursive way.
-It is therefor very easy to configure the number of downsamplings. Also the type of normaliation can be passed as a parameter (default is
+A little more generic version of the U-Net, as well as the 3D U-Net(Özgün Cicek et al.) can be found in `networks>RecursiveUNet.py` 
+respectively `networks>RecursiveUNet3D.py`. This implementation is done in a recursive way.
+It is therefor very easy to configure the number of downsamplings. Also the type of normalization can be passed as a parameter (default is
 nn.InstanceNorm2d).
