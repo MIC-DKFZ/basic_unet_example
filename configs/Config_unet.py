@@ -28,7 +28,7 @@ def get_config():
         update_from_argv=True,
 
         # Train parameters
-        batch_size=32,
+        batch_size=8,
         patch_size=64,
         n_epochs=10,
         learning_rate=0.0002,

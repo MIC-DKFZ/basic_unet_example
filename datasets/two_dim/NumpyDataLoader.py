@@ -22,7 +22,7 @@ import random
 import numpy as np
 
 from batchgenerators.dataloading import SlimDataLoaderBase
-from .data_loader import MultiThreadedDataLoader
+from datasets.data_loader import MultiThreadedDataLoader
 from .data_augmentation import get_transforms
 
 

@@ -25,10 +25,10 @@ def get_transforms(mode="train", target_size=128):
     tranform_list = []
 
     if mode == "train":
-        tranform_list = [CenterCropTransform(crop_size=(target_size, target_size)),
-                         ResizeTransform(target_size=(target_size, target_size), order=1),
+        tranform_list = [CenterCropTransform(crop_size=target_size),
+                         ResizeTransform(target_size=target_size, order=1),
                          MirrorTransform(axes=(2,)),
-                         SpatialTransform(patch_size=(target_size, target_size), random_crop=False,
+                         SpatialTransform(patch_size=(target_size,target_size,target_size), random_crop=False,
                                           patch_center_dist_from_border=target_size // 2,
                                           do_elastic_deform=True, alpha=(0., 1000.), sigma=(40., 60.),
                                           do_rotation=True,
@@ -39,13 +39,13 @@ def get_transforms(mode="train", target_size=128):
 
 
     elif mode == "val":
-        tranform_list = [CenterCropTransform(crop_size=(target_size, target_size)),
-                         ResizeTransform(target_size=(target_size, target_size), order=1),
+        tranform_list = [CenterCropTransform(crop_size=target_size),
+                         ResizeTransform(target_size=target_size, order=1),
                          ]
 
     elif mode == "test":
-        tranform_list = [CenterCropTransform(crop_size=(target_size, target_size)),
-                         ResizeTransform(target_size=(target_size, target_size), order=1),
+        tranform_list = [CenterCropTransform(crop_size=target_size),
+                         ResizeTransform(target_size=target_size, order=1),
                          ]
 
     tranform_list.append(NumpyToTensor())

@@ -24,14 +24,14 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torch.nn.functional as F
 
-from datasets.two_dim.NumpyDataLoader import NumpyDataSet
+from datasets.three_dim.NumpyDataLoader import NumpyDataSet
 from trixi.experiment.pytorchexperiment import PytorchExperiment
 
-from networks.RecursiveUNet import UNet
+from networks.RecursiveUNet3D import UNet3D
 from loss_functions.dice_loss import SoftDiceLoss
 
 
-class UNetExperiment(PytorchExperiment):
+class UNetExperiment3D(PytorchExperiment):
     """
     The UnetExperiment is inherited from the PytorchExperiment. It implements the basic life cycle for a segmentation task with UNet(https://arxiv.org/abs/1505.04597).
     It is optimized to work with the provided NumpyDataLoader.
@@ -67,7 +67,7 @@ class UNetExperiment(PytorchExperiment):
                                             keys=val_keys, mode="val", do_reshuffle=False)
         self.test_data_loader = NumpyDataSet(self.config.data_test_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
                                              keys=test_keys, mode="test", do_reshuffle=False)
-        self.model = UNet(num_classes=3, in_channels=1)
+        self.model = UNet3D(num_classes=3, in_channels=1)
 
         self.model.to(self.device)
 
@@ -118,10 +118,9 @@ class UNetExperiment(PytorchExperiment):
 
                 self.add_result(value=loss.item(), name='Train_Loss', tag='Loss', counter=epoch + (batch_counter / self.train_data_loader.data_loader.num_batches))
 
-                self.clog.show_image_grid(data.float(), name="data", normalize=True, scale_each=True, n_iter=epoch)
-                self.clog.show_image_grid(target.float(), name="mask", title="Mask", n_iter=epoch)
-                self.clog.show_image_grid(torch.argmax(pred.cpu(), dim=1, keepdim=True), name="unt_argmax", title="Unet", n_iter=epoch)
-                self.clog.show_image_grid(pred.cpu()[:, 1:2, ], name="unt", normalize=True, scale_each=True, n_iter=epoch)
+                self.clog.show_image_grid(data[:,:,30].float(), name="data", normalize=True, scale_each=True, n_iter=epoch)
+                self.clog.show_image_grid(target[:,:,30].float(), name="mask", title="Mask", n_iter=epoch)
+                self.clog.show_image_grid(torch.argmax(pred.cpu(), dim=1, keepdim=True)[:,:,30], name="unt_argmax", title="Unet", n_iter=epoch)
 
             batch_counter += 1
 
@@ -150,10 +149,9 @@ class UNetExperiment(PytorchExperiment):
 
         self.add_result(value=np.mean(loss_list), name='Val_Loss', tag='Loss', counter=epoch+1)
 
-        self.clog.show_image_grid(data.float(), name="data_val", normalize=True, scale_each=True, n_iter=epoch)
-        self.clog.show_image_grid(target.float(), name="mask_val", title="Mask", n_iter=epoch)
-        self.clog.show_image_grid(torch.argmax(pred.data.cpu(), dim=1, keepdim=True), name="unt_argmax_val", title="Unet", n_iter=epoch)
-        self.clog.show_image_grid(pred.data.cpu()[:, 1:2, ], name="unt_val", normalize=True, scale_each=True, n_iter=epoch)
+        self.clog.show_image_grid(data[:,:,30].float(), name="data_val", normalize=True, scale_each=True, n_iter=epoch)
+        self.clog.show_image_grid(target[:,:,30].float(), name="mask_val", title="Mask", n_iter=epoch)
+        self.clog.show_image_grid(torch.argmax(pred.data.cpu()[:,:,30], dim=1, keepdim=True), name="unt_argmax_val", title="Unet", n_iter=epoch)
 
     def test(self):
         # TODO
