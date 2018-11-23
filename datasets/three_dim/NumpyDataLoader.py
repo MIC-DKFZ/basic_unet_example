@@ -26,10 +26,10 @@ from datasets.data_loader import MultiThreadedDataLoader
 from .data_augmentation import get_transforms
 
 
-def load_dataset(base_dir, pattern='*.npy', slice_offset=5, keys=None):
+def load_dataset(base_dir, pattern='*.npy', keys=None):
     fls = []
     files_len = []
-    slices_ax = []
+    dataset = []
 
     for root, dirs, files in os.walk(base_dir):
         i = 0
@@ -42,11 +42,11 @@ def load_dataset(base_dir, pattern='*.npy', slice_offset=5, keys=None):
                 fls.append(npy_file)
                 files_len.append(numpy_array.shape[1])
 
-                slices_ax.extend([(i, j) for j in range(slice_offset, files_len[-1] - slice_offset)])
+                dataset.extend([i])
 
                 i += 1
 
-    return fls, files_len, slices_ax,
+    return fls, files_len, dataset
 
 
 class NumpyDataSet(object):
@@ -54,15 +54,14 @@ class NumpyDataSet(object):
     TODO
     """
     def __init__(self, base_dir, mode="train", batch_size=16, num_batches=10000000, seed=None, num_processes=8, num_cached_per_queue=8 * 4, target_size=128,
-                 file_pattern='*.npy', label_slice=1, input_slice=(0,), do_reshuffle=True, keys=None):
+                 file_pattern='*.npy', label=1, input=(0,), do_reshuffle=True, keys=None):
 
         data_loader = NumpyDataLoader(base_dir=base_dir, mode=mode, batch_size=batch_size, num_batches=num_batches, seed=seed, file_pattern=file_pattern,
-                                      input_slice=input_slice, label_slice=label_slice, keys=keys)
+                                      input=input, label=label, keys=keys)
 
         self.data_loader = data_loader
         self.batch_size = batch_size
         self.do_reshuffle = do_reshuffle
-        self.number_of_slices = 1
 
         self.transforms = get_transforms(mode=mode, target_size=target_size)
         self.augmenter = MultiThreadedDataLoader(data_loader, self.transforms, num_processes=num_processes,
@@ -85,10 +84,10 @@ class NumpyDataSet(object):
 
 class NumpyDataLoader(SlimDataLoaderBase):
     def __init__(self, base_dir, mode="train", batch_size=16, num_batches=10000000,
-                 seed=None, file_pattern='*.npy', label_slice=1, input_slice=(0,), keys=None):
+                 seed=None, file_pattern='*.npy', label=1, input=(0,), keys=None):
 
-        self.files, self.file_len, self.slices = load_dataset(base_dir=base_dir, pattern=file_pattern, slice_offset=0, keys=keys, )
-        super(NumpyDataLoader, self).__init__(self.slices, batch_size, num_batches)
+        self.files, self.file_len, self.dataset = load_dataset(base_dir=base_dir, pattern=file_pattern, keys=keys, )
+        super(NumpyDataLoader, self).__init__(self.dataset, batch_size, num_batches)
 
         self.batch_size = batch_size
 
@@ -96,22 +95,22 @@ class NumpyDataLoader(SlimDataLoaderBase):
         if mode == "train":
             self.use_next = False
 
-        self.slice_idxs = list(range(0, len(self.slices)))
+        self.idxs = list(range(0, len(self.dataset)))
 
-        self.data_len = len(self.slices)
+        self.data_len = len(self.dataset)
 
         self.num_batches = min((self.data_len // self.batch_size)+10, num_batches)
 
-        if isinstance(label_slice, int):
-            label_slice = (label_slice,)
-        self.input_slice = input_slice
-        self.label_slice = label_slice
+        if isinstance(label, int):
+            label = (label,)
+        self.input = input
+        self.label = label
 
-        self.np_data = np.asarray(self.slices)
+        self.np_data = np.asarray(self.dataset)
 
     def reshuffle(self):
         print("Reshuffle...")
-        random.shuffle(self.slice_idxs)
+        random.shuffle(self.idxs)
         print("Initializing... this might take a while...")
 
     def generate_train_batch(self):
@@ -123,8 +122,8 @@ class NumpyDataLoader(SlimDataLoaderBase):
         return n_items
 
     def __getitem__(self, item):
-        slice_idxs = self.slice_idxs
-        data_len = len(self.slices)
+        idxs = self.idxs
+        data_len = len(self.dataset)
         np_data = self.np_data
 
         if item > len(self):
@@ -139,7 +138,7 @@ class NumpyDataLoader(SlimDataLoaderBase):
             stop_idx = data_len
 
         if stop_idx > start_idx:
-            idxs = slice_idxs[start_idx:stop_idx]
+            idxs = idxs[start_idx:stop_idx]
         else:
             raise StopIteration()
 
@@ -150,25 +149,24 @@ class NumpyDataLoader(SlimDataLoaderBase):
     def get_data_from_array(self, open_array):
         data = []
         fnames = []
-        slice_idxs = []
+        idxs = []
         labels = []
 
-        for slice in open_array:
-            fn_name = self.files[slice[0]]
+        for idx in open_array:
+            fn_name = self.files[idx]
 
             numpy_array = np.load(fn_name, mmap_mode="r")
 
-            # numpy_slice = numpy_array[ :, slice[1], ]
-            data.append(numpy_array[None, self.input_slice[0]])   # 'None' keeps the dimension
+            data.append(numpy_array[None, self.input[0]])   # 'None' keeps the dimension
 
-            if self.label_slice is not None:
-                labels.append(numpy_array[None, self.label_slice[0]])   # 'None' keeps the dimension
+            if self.label is not None:
+                labels.append(numpy_array[None, self.label[0]])   # 'None' keeps the dimension
 
-            fnames.append(self.files[slice[0]])
-            slice_idxs.append(slice[1])
+            fnames.append(self.files[idx])
+            idxs.append(idx)
 
-        ret_dict = {'data': data, 'fnames': fnames, 'slice_idxs': slice_idxs}
-        if self.label_slice is not None:
+        ret_dict = {'data': data, 'fnames': fnames, 'idxs': idxs}
+        if self.label is not None:
             ret_dict['seg'] = labels
 
         return ret_dict

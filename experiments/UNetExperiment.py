@@ -126,8 +126,6 @@ class UNetExperiment(PytorchExperiment):
             batch_counter += 1
 
     def validate(self, epoch):
-        if epoch % 5 != 0:
-            return
         self.elog.print('VALIDATE')
         self.model.eval()
 
