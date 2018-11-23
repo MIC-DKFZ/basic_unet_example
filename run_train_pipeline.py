@@ -24,21 +24,22 @@ from datasets.example_dataset.download_dataset import download_dataset
 from datasets.example_dataset.preprocessing import preprocess_data
 from experiments.UNetExperiment import UNetExperiment
 
-c = get_config()
+if __name__ == "__main__":
+    c = get_config()
 
-dataset_name = 'Task04_Hippocampus'
-download_dataset(dest_path=c.data_root_dir, dataset=dataset_name)
+    dataset_name = 'Task04_Hippocampus'
+    download_dataset(dest_path=c.data_root_dir, dataset=dataset_name)
 
-if not exists(os.path.join(os.path.join(c.data_root_dir, dataset_name), 'preprocessed')):
-    print('Preprocessing data. [STARTED]')
-    preprocess_data(root_dir=os.path.join(c.data_root_dir, dataset_name))
-    create_splits(output_dir=c.split_dir, image_dir=c.data_dir)
-    print('Preprocessing data. [DONE]')
-else:
-    print('Data already preprocessed. Will not be preprocessed again. Delete Folder to enforce it.')
+    if not exists(os.path.join(os.path.join(c.data_root_dir, dataset_name), 'preprocessed')):
+        print('Preprocessing data. [STARTED]')
+        preprocess_data(root_dir=os.path.join(c.data_root_dir, dataset_name))
+        create_splits(output_dir=c.split_dir, image_dir=c.data_dir)
+        print('Preprocessing data. [DONE]')
+    else:
+        print('Data already preprocessed. Will not be preprocessed again. Delete Folder to enforce it.')
 
-exp = UNetExperiment(config=c, name='unet_experiment', n_epochs=c.n_epochs,
-                     seed=42, append_rnd_to_name=c.append_rnd_string, visdomlogger_kwargs={"auto_start": c.start_visdom})
+    exp = UNetExperiment(config=c, name='unet_experiment', n_epochs=c.n_epochs,
+                         seed=42, append_rnd_to_name=c.append_rnd_string, visdomlogger_kwargs={"auto_start": c.start_visdom})
 
-exp.run()
-# exp.run_test(setup=False)
+    exp.run()
+    exp.run_test(setup=False)

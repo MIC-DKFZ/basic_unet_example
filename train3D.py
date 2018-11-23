@@ -18,10 +18,11 @@
 from configs.Config_unet import get_config
 from experiments.UNetExperiment3D import UNetExperiment3D
 
-c = get_config()
+if __name__ == "__main__":
+    c = get_config()
 
-exp = UNetExperiment3D(config=c, name='unet_experiment', n_epochs=c.n_epochs,
-                     seed=42, append_rnd_to_name=c.append_rnd_string, visdomlogger_kwargs={"auto_start": c.start_visdom}, globs=globals())
+    exp = UNetExperiment3D(config=c, name='unet_experiment', n_epochs=c.n_epochs,
+                         seed=42, append_rnd_to_name=c.append_rnd_string, visdomlogger_kwargs={"auto_start": c.start_visdom}, globs=globals())
 
-exp.run()
-exp.run_test(setup=False)
+    exp.run()
+    exp.run_test(setup=False)
