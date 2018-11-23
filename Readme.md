@@ -9,16 +9,16 @@ If you encounter a bug, feel free to contact us or open a github issue.
 
 ## How to set it up
 The example is very easy to use. Just create a new virtual environment in python and install the requirements. 
-We suggest to use virtualenvwrapper (https://virtualenvwrapper.readthedocs.io/en/latest/).
+This example requires python3. We suggest to use virtualenvwrapper (https://virtualenvwrapper.readthedocs.io/en/latest/).
 ```
 mkvirtualenv unet_example
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 After setting up the virtual environment you have to start visdom once so it can download some needed files. You only
 have to do that once. You can stop the visdom server after a few seconds when it finished downloading the files.
 ```
-python -m visdom.server
+python3 -m visdom.server
 ```
 
 You can edit the paths for data storage and logging in the config file. By default, everything is stored in your working directory.
@@ -27,7 +27,7 @@ You can edit the paths for data storage and logging in the config file. By defau
 ## How to use it
 To start the training simply run 
 ```
-python run_train_pipeline.py
+python3 run_train_pipeline.py
 ```
 
 This will download the Hippocampus dataset from the medical segmentation decathlon (http://medicaldecathlon.com),

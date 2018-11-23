@@ -5,4 +5,4 @@ torch==0.4.1
 torchfile==0.1.0
 torchvision==0.2.1
 -e git+https://github.com/MIC-DKFZ/trixi.git#egg=trixi
--e git+https://github.com/MIC-DKFZ/batchgenerators#egg=batchgenerators
+-e git+https://github.com/MIC-DKFZ/batchgenerators@dc5aff4d29a027546fe7dc8b8a17a0fba06e8c70#egg=batchgenerators
