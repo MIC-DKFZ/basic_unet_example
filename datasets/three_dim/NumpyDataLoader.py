@@ -62,6 +62,7 @@ class NumpyDataSet(object):
         self.data_loader = data_loader
         self.batch_size = batch_size
         self.do_reshuffle = do_reshuffle
+        self.number_of_slices = 1
 
         self.transforms = get_transforms(mode=mode, target_size=target_size)
         self.augmenter = MultiThreadedDataLoader(data_loader, self.transforms, num_processes=num_processes,

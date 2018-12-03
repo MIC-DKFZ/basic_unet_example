@@ -25,15 +25,15 @@ def get_transforms(mode="train", target_size=128):
     tranform_list = []
 
     if mode == "train":
-        tranform_list = [CenterCropTransform(crop_size=target_size),
-                         ResizeTransform(target_size=target_size, order=1),
-                         MirrorTransform(axes=(2,)),
+        tranform_list = [# CenterCropTransform(crop_size=target_size),
+                         # ResizeTransform(target_size=target_size, order=1),
+                         MirrorTransform(axes=(1,)),
                          SpatialTransform(patch_size=(target_size,target_size), random_crop=False,
                                           patch_center_dist_from_border=target_size // 2,
                                           do_elastic_deform=True, alpha=(0., 1000.), sigma=(40., 60.),
-                                          do_rotation=True,
+                                          do_rotation=True, p_rot_per_sample=0.5,
                                           angle_x=(-0.1, 0.1), angle_y=(0, 1e-8), angle_z=(0, 1e-8),
-                                          scale=(0.9, 1.4),
+                                          scale=(0.5, 1.9), p_scale_per_sample=0.5,
                                           border_mode_data="nearest", border_mode_seg="nearest"),
                          ]
 
