@@ -28,15 +28,16 @@ if __name__ == "__main__":
     c = get_config()
 
     dataset_name = 'Task04_Hippocampus'
-    download_dataset(dest_path=c.data_root_dir, dataset=dataset_name)
+    # dataset_name = 'Task01_BrainTumour'
+    download_dataset(dest_path=c.data_root_dir, dataset=dataset_name)  #, id=c.google_drive_id)
 
-    if not exists(os.path.join(os.path.join(c.data_root_dir, dataset_name), 'preprocessed')):
+    if True:  # not exists(os.path.join(os.path.join(c.data_root_dir, dataset_name), 'preprocessed')):
         print('Preprocessing data. [STARTED]')
         preprocess_data(root_dir=os.path.join(c.data_root_dir, dataset_name))
         create_splits(output_dir=c.split_dir, image_dir=c.data_dir)
         print('Preprocessing data. [DONE]')
     else:
-        print('Data already preprocessed. Will not be preprocessed again. Delete Folder to enforce it.')
+        print('The data has already been preprocessed. It will not be preprocessed again. Delete the folder to enforce it.')
 
     exp = UNetExperiment(config=c, name='unet_experiment', n_epochs=c.n_epochs,
                          seed=42, append_rnd_to_name=c.append_rnd_string, visdomlogger_kwargs={"auto_start": c.start_visdom})

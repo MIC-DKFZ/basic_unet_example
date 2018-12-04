@@ -28,6 +28,8 @@ def get_config():
         update_from_argv=True,
 
         # Train parameters
+        num_classes=3,
+        in_channels=1,
         batch_size=8,
         patch_size=64,
         n_epochs=10,
@@ -53,7 +55,7 @@ def get_config():
         data_dir=os.path.join(data_root_dir, 'Task04_Hippocampus/preprocessed'),  # This is where your training and validation data is stored
         data_test_dir=os.path.join(data_root_dir, 'Task04_Hippocampus/preprocessed'),  # This is where your test data is stored
 
-        split_dir=os.path.join(data_root_dir, 'Task04_Hippocampus')  # This is where the 'splits.pkl' file is located, that holds your splits.
+        split_dir=os.path.join(data_root_dir, 'Task04_Hippocampus'),  # This is where the 'splits.pkl' file is located, that holds your splits.
     )
 
     print(c)

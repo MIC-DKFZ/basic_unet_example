@@ -130,6 +130,7 @@ class UNetExperiment3D(PytorchExperiment):
         self.elog.print('VALIDATE')
         self.model.eval()
 
+        data = None
         loss_list = []
 
         with torch.no_grad():
@@ -143,6 +144,7 @@ class UNetExperiment3D(PytorchExperiment):
                 loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
                 loss_list.append(loss.item())
 
+        assert data is not None, 'data is None. Please check if your dataloader works properly'
         self.scheduler.step(np.mean(loss_list))
 
         self.elog.print('Epoch: %d Loss: %.4f' % (self._epoch_idx, np.mean(loss_list)))
