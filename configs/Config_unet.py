@@ -49,6 +49,7 @@ def get_config():
         checkpoint_dir='',
 
         # Adapt to your own path, if needed.
+        google_drive_id='1RzPB1_bqzQhlWvU-YGvZzhx2omcDh38C',
         base_dir=os.path.abspath('output_experiment'),  # Where to log the output of the experiment.
 
         data_root_dir=data_root_dir,  # The path where the downloaded dataset is stored.

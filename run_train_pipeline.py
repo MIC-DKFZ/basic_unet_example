@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     dataset_name = 'Task04_Hippocampus'
     # dataset_name = 'Task01_BrainTumour'
-    download_dataset(dest_path=c.data_root_dir, dataset=dataset_name)  #, id=c.google_drive_id)
+    download_dataset(dest_path=c.data_root_dir, dataset=dataset_name, id=c.google_drive_id)
 
     if True:  # not exists(os.path.join(os.path.join(c.data_root_dir, dataset_name), 'preprocessed')):
         print('Preprocessing data. [STARTED]')
