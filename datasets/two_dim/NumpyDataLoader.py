@@ -167,8 +167,8 @@ class NumpyDataLoader(SlimDataLoaderBase):
             fnames.append(self.files[slice[0]])
             slice_idxs.append(slice[1])
 
-        ret_dict = {'data': data, 'fnames': fnames, 'slice_idxs': slice_idxs}
+        ret_dict = {'data': np.asarray(data), 'fnames': fnames, 'slice_idxs': slice_idxs}
         if self.label_slice is not None:
-            ret_dict['seg'] = labels
+            ret_dict['seg'] = np.asarray(labels)
 
         return ret_dict
