@@ -6,7 +6,6 @@ It is also an example on how to use our other python packages batchgenerators (h
 Trixi (https://github.com/MIC-DKFZ/trixi) to suit all our deep learning data augmentation needs.
 If you encounter a bug, feel free to contact us or open a github issue.
 
-
 ## How to set it up
 The example is very easy to use. Just create a new virtual environment in python and install the requirements. 
 This example requires python3. We suggest to use virtualenvwrapper (https://virtualenvwrapper.readthedocs.io/en/latest/).
