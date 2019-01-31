@@ -27,13 +27,11 @@ from experiments.UNetExperiment import UNetExperiment
 if __name__ == "__main__":
     c = get_config()
 
-    dataset_name = 'Task04_Hippocampus'
-    # dataset_name = 'Task01_BrainTumour'
-    download_dataset(dest_path=c.data_root_dir, dataset=dataset_name, id=c.google_drive_id)
+    download_dataset(dest_path=c.data_root_dir, dataset=c.dataset_name, id=c.google_drive_id)
 
-    if not exists(os.path.join(os.path.join(c.data_root_dir, dataset_name), 'preprocessed')):
+    if not exists(os.path.join(os.path.join(c.data_root_dir, c.dataset_name), 'preprocessed')):
         print('Preprocessing data. [STARTED]')
-        preprocess_data(root_dir=os.path.join(c.data_root_dir, dataset_name))
+        preprocess_data(root_dir=os.path.join(c.data_root_dir, c.dataset_name))
         create_splits(output_dir=c.split_dir, image_dir=c.data_dir)
         print('Preprocessing data. [DONE]')
     else:

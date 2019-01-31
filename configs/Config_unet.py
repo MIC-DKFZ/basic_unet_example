@@ -45,11 +45,12 @@ def get_config():
         start_visdom=True,
 
         do_instancenorm=True,  # Defines whether or not the UNet does a instance normalization in the contracting path
-        do_load_checkpoint=False,
-        checkpoint_dir='',
+        do_load_checkpoint=True,
+        checkpoint_dir='/media/kleina/Data/Code/temp/basic_unet_example/output_experiment/20190131-105009_Basic_Unet/checkpoint/checkpoint_last.pth.tar',
 
         # Adapt to your own path, if needed.
         google_drive_id='1RzPB1_bqzQhlWvU-YGvZzhx2omcDh38C',
+        dataset_name='Task04_Hippocampus',
         base_dir=os.path.abspath('output_experiment'),  # Where to log the output of the experiment.
 
         data_root_dir=data_root_dir,  # The path where the downloaded dataset is stored.

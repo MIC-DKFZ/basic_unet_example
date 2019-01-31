@@ -17,7 +17,9 @@
 
 import os
 import pickle
+from os.path import exists
 
+import SimpleITK
 import numpy as np
 import torch
 import torch.optim as optim
@@ -57,7 +59,7 @@ class UNetExperiment(PytorchExperiment):
 
         tr_keys = splits[self.config.fold]['train']
         val_keys = splits[self.config.fold]['val']
-        test_keys = splits[self.config.fold]['test']
+        self.test_keys = splits[self.config.fold]['test']
 
         self.device = torch.device(self.config.device if torch.cuda.is_available() else "cpu")
 
@@ -66,7 +68,7 @@ class UNetExperiment(PytorchExperiment):
         self.val_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
                                             keys=val_keys, mode="val", do_reshuffle=False)
         self.test_data_loader = NumpyDataSet(self.config.data_test_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
-                                             keys=test_keys, mode="test", do_reshuffle=False)
+                                             keys=self.test_keys, mode="test", do_reshuffle=False)
         self.model = UNet(num_classes=self.config.num_classes, in_channels=self.config.in_channels)
 
         self.model.to(self.device)
@@ -161,3 +163,44 @@ class UNetExperiment(PytorchExperiment):
     def test(self):
         # TODO
         print('TODO: Implement your test() method here')
+
+    def segment(self):
+        # self.model = UNet(num_classes=self.config.num_classes, in_channels=self.config.additional_slices * 2 + 1, do_batchnorm=self.config.do_batchnorm)
+        # self.model.to(self.device)
+        # self.load_checkpoint(name=self.config.seg_load_network_path, save_types=("model"))
+        self.model.eval()
+
+        for test_key in self.test_keys:
+            self.test_data_loader = NumpyDataSet(self.config.data_test_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
+                                                 keys=[test_key], mode="test", do_reshuffle=False)
+
+            result = []
+            first = True
+            print('Segmenting...')
+            for data_batch in self.test_data_loader:
+                data = data_batch['data'][0].float().to(self.device)
+
+                pred = self.model(data)
+
+                if first:
+                    result = torch.argmax(pred.detach().data.cpu(), dim=1, keepdim=True)
+                    first = False
+                else:
+                    result = torch.cat((result, torch.argmax(pred.detach().data.cpu(), dim=1, keepdim=True)))
+                print(result.shape)
+
+            image_path = os.path.join(os.path.join(self.config.data_root_dir, self.config.dataset_name), 'imagesTr')
+
+            img = SimpleITK.ReadImage(os.path.join(image_path, test_key) + '.nii.gz')
+
+            img_size = img.GetSize()
+            result_reshaped = np.swapaxes(result.data.numpy().squeeze(), 0, 2)[0:img_size[0], 0:img_size[1], 0:img_size[0]]
+            image_to_write = SimpleITK.GetImageFromArray(result_reshaped)
+            image_to_write.SetSpacing(img.GetSpacing())
+            image_to_write.SetOrigin(img.GetOrigin())
+            image_to_write.SetDirection(img.GetDirection())
+
+            seg_output_dir = os.path.join(self.config.split_dir, 'test')
+            if not os.path.exists(seg_output_dir):
+                os.makedirs(seg_output_dir)
+            SimpleITK.WriteImage(SimpleITK.Cast(image_to_write, SimpleITK.sitkUInt8), os.path.join(seg_output_dir, test_key) + '.nrrd')

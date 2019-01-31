@@ -26,3 +26,5 @@ if __name__ == "__main__":
 
     exp.run()
     exp.run_test(setup=False)
+    # exp.setup()
+    exp.segment()
