@@ -15,21 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+from os.path import exists
+
 from configs.Config_unet import get_config
+from datasets.example_dataset.create_splits import create_splits
+from datasets.example_dataset.download_dataset import download_dataset
+from datasets.example_dataset.preprocessing import preprocess_data
 from experiments.UNetExperiment import UNetExperiment
 
 if __name__ == "__main__":
     c = get_config()
 
-    exp = UNetExperiment(config=c, name=c.name, n_epochs=c.n_epochs,
-                         seed=42, append_rnd_to_name=c.append_rnd_string, globs=globals(),
-                         loggers={
-                             "visdom": ("visdom", {"auto_start": c.start_visdom}),
-                             # "tb": ("tensorboard"),
-                             # "slack": ("slack", {"token": "XXXXXXXX",
-                             #                     "user_email": "x"})
-                         }
-                         )
+    download_dataset(dest_path=c.data_root_dir, dataset=c.dataset_name, id=c.google_drive_id)
 
-    exp.run()
-    exp.run_test(setup=False)
+    print('Preprocessing data. [STARTED]')
+    preprocess_data(root_dir=os.path.join(c.data_root_dir, c.dataset_name))
+    create_splits(output_dir=c.split_dir, image_dir=c.data_dir)
+    print('Preprocessing data. [DONE]')

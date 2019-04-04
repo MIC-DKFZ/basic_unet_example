@@ -56,8 +56,8 @@ def preprocess_data(root_dir):
 
         image = (image - image.min())/(image.max()-image.min())
 
-        image = reshape(image, append_value=0, new_shape=(64, 64, 64))
-        label = reshape(label, append_value=0, new_shape=(64, 64, 64))
+        image = reshape(image, append_value=0, new_shape=(image.shape[0], 64, 64))
+        label = reshape(label, append_value=0, new_shape=(label.shape[0], 64, 64))
 
         result = np.stack((image, label))
 

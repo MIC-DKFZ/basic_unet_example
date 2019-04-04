@@ -17,6 +17,7 @@
 
 import os
 import pickle
+from collections import OrderedDict
 
 import numpy as np
 import torch
@@ -28,7 +29,7 @@ from datasets.three_dim.NumpyDataLoader import NumpyDataSet
 from trixi.experiment.pytorchexperiment import PytorchExperiment
 
 from networks.RecursiveUNet3D import UNet3D
-from loss_functions.dice_loss import SoftDiceLoss
+from loss_functions.dice_loss import SoftDiceLoss, DC_and_CE_loss
 
 
 class UNetExperiment3D(PytorchExperiment):
@@ -73,8 +74,8 @@ class UNetExperiment3D(PytorchExperiment):
 
         # We use a combination of DICE-loss and CE-Loss in this example.
         # This proved good in the medical segmentation decathlon.
-        self.dice_loss = SoftDiceLoss(batch_dice=True)  # Softmax für DICE Loss!
-        self.ce_loss = torch.nn.CrossEntropyLoss()  # Kein Softmax für CE Loss -> ist in torch schon mit drin!
+        self.loss = DC_and_CE_loss({'batch_dice': True, 'smooth': 1e-5, 'smooth_in_nom': True,
+                                    'do_bg': False, 'rebalance_weights': None, 'background_weight': 1}, OrderedDict())
 
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.config.learning_rate)
         self.scheduler = ReduceLROnPlateau(self.optimizer, 'min')
@@ -105,9 +106,8 @@ class UNetExperiment3D(PytorchExperiment):
             target = data_batch['seg'][0].long().to(self.device)
 
             pred = self.model(data)
-            pred_softmax = F.softmax(pred)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
 
-            loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
+            loss = self.loss(pred, target.squeeze())
             # loss = self.ce_loss(pred, target.squeeze())
             loss.backward()
             self.optimizer.step()
@@ -139,9 +139,8 @@ class UNetExperiment3D(PytorchExperiment):
                 target = data_batch['seg'][0].long().to(self.device)
 
                 pred = self.model(data)
-                pred_softmax = F.softmax(pred)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
 
-                loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
+                loss = self.loss(pred, target.squeeze())
                 loss_list.append(loss.item())
 
         assert data is not None, 'data is None. Please check if your dataloader works properly'

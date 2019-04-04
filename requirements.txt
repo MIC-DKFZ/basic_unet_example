@@ -3,6 +3,6 @@ MedPy==0.3.0
 SimpleITK==1.1.0
 torch==0.4.1
 torchfile==0.1.0
--e git+https://github.com/MIC-DKFZ/trixi.git@d9f6cfe6dd2db6707237f249ccae07c25e9246f4#egg=trixi
--e git+https://github.com/MIC-DKFZ/batchgenerators@dc5aff4d29a027546fe7dc8b8a17a0fba06e8c70#egg=batchgenerators
+trixi==0.1.2.1
+batchgenerators==0.18.2
 numpy==1.14.5
