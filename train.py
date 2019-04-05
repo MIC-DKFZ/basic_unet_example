@@ -15,6 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import matplotlib
+matplotlib.use('Agg')
+
 from configs.Config_unet import get_config
 from experiments.UNetExperiment import UNetExperiment
 
@@ -23,6 +26,7 @@ if __name__ == "__main__":
 
     exp = UNetExperiment(config=c, name=c.name, n_epochs=c.n_epochs,
                          seed=42, append_rnd_to_name=c.append_rnd_string, globs=globals(),
+                         # visdomlogger_kwargs={"auto_start": c.start_visdom},
                          loggers={
                              "visdom": ("visdom", {"auto_start": c.start_visdom}),
                              # "tb": ("tensorboard"),

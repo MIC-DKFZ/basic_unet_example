@@ -15,6 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import matplotlib
+matplotlib.use('Agg')
+
 import os
 from os.path import exists
 
@@ -39,8 +42,13 @@ if __name__ == "__main__":
     else:
         print('The data has already been preprocessed. It will not be preprocessed again. Delete the folder to enforce it.')
 
-    exp = UNetExperiment(config=c, name='unet_experiment', n_epochs=c.n_epochs,
-                         seed=42, append_rnd_to_name=c.append_rnd_string, visdomlogger_kwargs={"auto_start": c.start_visdom})
+    exp = UNetExperiment(config=c, name=c.name, n_epochs=c.n_epochs,
+                         seed=42, append_rnd_to_name=c.append_rnd_string, globs=globals(),
+                         # visdomlogger_kwargs={"auto_start": c.start_visdom},
+                         loggers={
+                             "visdom": ("visdom", {"auto_start": c.start_visdom})
+                         }
+                         )
 
     exp.run()
     exp.run_test(setup=False)
