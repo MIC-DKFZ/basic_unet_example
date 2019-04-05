@@ -25,7 +25,7 @@ from datasets.utils import reshape
 from utilities.file_and_folder_operations import subfiles
 
 
-def preprocess_data(root_dir):
+def preprocess_data(root_dir, y_shape=64, z_shape=64):
     image_dir = os.path.join(root_dir, 'imagesTr')
     label_dir = os.path.join(root_dir, 'labelsTr')
     output_dir = os.path.join(root_dir, 'preprocessed')
@@ -57,8 +57,8 @@ def preprocess_data(root_dir):
         # normalize images
         image = (image - image.min())/(image.max()-image.min())
 
-        image = reshape(image, append_value=0, new_shape=(image.shape[0], 64, 64))
-        label = reshape(label, append_value=0, new_shape=(label.shape[0], 64, 64))
+        image = reshape(image, append_value=0, new_shape=(image.shape[0], y_shape, z_shape))
+        label = reshape(label, append_value=0, new_shape=(label.shape[0], y_shape, z_shape))
 
         result = np.stack((image, label))
 

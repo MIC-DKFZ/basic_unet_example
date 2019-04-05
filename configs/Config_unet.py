@@ -32,7 +32,7 @@ def get_config():
         in_channels=1,
         batch_size=8,
         patch_size=64,
-        n_epochs=10,
+        n_epochs=50,
         learning_rate=0.0002,
         fold=0,  # The 'splits.pkl' may contain multiple folds. Here we choose which one we want to use.
 
@@ -50,6 +50,7 @@ def get_config():
 
         # Adapt to your own path, if needed.
         google_drive_id='1RzPB1_bqzQhlWvU-YGvZzhx2omcDh38C',
+        dataset_name='Task04_Hippocampus',
         base_dir=os.path.abspath('output_experiment'),  # Where to log the output of the experiment.
 
         data_root_dir=data_root_dir,  # The path where the downloaded dataset is stored.
