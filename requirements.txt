@@ -1,7 +1,7 @@
 googledrivedownloader==0.3
-MedPy==0.3.0
-SimpleITK==1.1.0
-torch==0.4.1
+MedPy==0.4.0
+SimpleITK==1.2.0
+torch==1.0.1.post2
 torchfile==0.1.0
 trixi==0.1.2.1
 batchgenerators==0.18.2
