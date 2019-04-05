@@ -54,5 +54,5 @@ def create_splits(output_dir, image_dir):
 
         splits.append(split_dict)
 
-    with os.open(os.path.join(output_dir, 'splits.pkl'), 'wb') as f:
+    with open(os.path.join(output_dir, 'splits.pkl'), 'wb') as f:
         pickle.dump(splits, f)

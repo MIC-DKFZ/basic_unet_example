@@ -54,6 +54,7 @@ def preprocess_data(root_dir):
             class_stats[i] += np.sum(label == i)
             total += np.sum(label == i)
 
+        # normalize images
         image = (image - image.min())/(image.max()-image.min())
 
         image = reshape(image, append_value=0, new_shape=(image.shape[0], 64, 64))
