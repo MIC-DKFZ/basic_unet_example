@@ -29,7 +29,7 @@ from datasets.two_dim.NumpyDataLoader import NumpyDataSet
 from trixi.experiment.pytorchexperiment import PytorchExperiment
 
 from networks.RecursiveUNet import UNet
-from loss_functions.dice_loss import DC_and_CE_loss
+from loss_functions.dice_loss import SoftDiceLoss
 
 
 class UNetExperiment(PytorchExperiment):
@@ -74,8 +74,8 @@ class UNetExperiment(PytorchExperiment):
 
         # We use a combination of DICE-loss and CE-Loss in this example.
         # This proved good in the medical segmentation decathlon.
-        self.loss = DC_and_CE_loss({'batch_dice': True, 'smooth': 1e-5, 'smooth_in_nom': True,
-                                                'do_bg': False, 'rebalance_weights': None, 'background_weight': 1}, OrderedDict())
+        self.dice_loss = SoftDiceLoss(batch_dice=True)  # Softmax for DICE Loss!
+        self.ce_loss = torch.nn.CrossEntropyLoss()  # No softmax for CE Loss -> is implemented in torch!
 
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.config.learning_rate)
         self.scheduler = ReduceLROnPlateau(self.optimizer, 'min')
@@ -107,8 +107,10 @@ class UNetExperiment(PytorchExperiment):
             target = data_batch['seg'][0].long().to(self.device)
 
             pred = self.model(data)
+            pred_softmax = F.softmax(pred, dim=1)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
 
-            loss = self.loss(pred, target.squeeze())
+            loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
+
 
             loss.backward()
             self.optimizer.step()
@@ -119,8 +121,8 @@ class UNetExperiment(PytorchExperiment):
 
                 self.add_result(value=loss.item(), name='Train_Loss', tag='Loss', counter=epoch + (batch_counter / self.train_data_loader.data_loader.num_batches))
 
-                self.clog.show_image_grid(data.float(), name="data", normalize=True, scale_each=True, n_iter=epoch)
-                self.clog.show_image_grid(target.float(), name="mask", title="Mask", n_iter=epoch)
+                self.clog.show_image_grid(data.float().cpu(), name="data", normalize=True, scale_each=True, n_iter=epoch)
+                self.clog.show_image_grid(target.float().cpu(), name="mask", title="Mask", n_iter=epoch)
                 self.clog.show_image_grid(torch.argmax(pred.cpu(), dim=1, keepdim=True), name="unt_argmax", title="Unet", n_iter=epoch)
                 self.clog.show_image_grid(pred.cpu()[:, 1:2, ], name="unt", normalize=True, scale_each=True, n_iter=epoch)
 
@@ -141,8 +143,9 @@ class UNetExperiment(PytorchExperiment):
                 target = data_batch['seg'][0].long().to(self.device)
 
                 pred = self.model(data)
+                pred_softmax = F.softmax(pred, dim=1)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
 
-                loss = self.loss(pred, target.squeeze())
+                loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
                 loss_list.append(loss.item())
 
         assert data is not None, 'data is None. Please check if your dataloader works properly'
@@ -152,8 +155,8 @@ class UNetExperiment(PytorchExperiment):
 
         self.add_result(value=np.mean(loss_list), name='Val_Loss', tag='Loss', counter=epoch+1)
 
-        self.clog.show_image_grid(data.float(), name="data_val", normalize=True, scale_each=True, n_iter=epoch)
-        self.clog.show_image_grid(target.float(), name="mask_val", title="Mask", n_iter=epoch)
+        self.clog.show_image_grid(data.float().cpu(), name="data_val", normalize=True, scale_each=True, n_iter=epoch)
+        self.clog.show_image_grid(target.float().cpu(), name="mask_val", title="Mask", n_iter=epoch)
         self.clog.show_image_grid(torch.argmax(pred.data.cpu(), dim=1, keepdim=True), name="unt_argmax_val", title="Unet", n_iter=epoch)
         self.clog.show_image_grid(pred.data.cpu()[:, 1:2, ], name="unt_val", normalize=True, scale_each=True, n_iter=epoch)
 
