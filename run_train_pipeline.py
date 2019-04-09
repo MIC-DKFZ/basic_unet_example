@@ -21,7 +21,7 @@ matplotlib.use('Agg')
 import os
 from os.path import exists
 
-from configs.Config_unet_Pancreas import get_config
+from configs.Config_unet import get_config
 from datasets.example_dataset.create_splits import create_splits
 from datasets.example_dataset.download_dataset import download_dataset
 from datasets.example_dataset.preprocessing import preprocess_data
