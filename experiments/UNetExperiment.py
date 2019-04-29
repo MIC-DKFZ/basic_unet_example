@@ -31,7 +31,6 @@ from trixi.experiment.pytorchexperiment import PytorchExperiment
 from networks.RecursiveUNet import UNet
 from loss_functions.dice_loss import SoftDiceLoss
 
-
 class UNetExperiment(PytorchExperiment):
     """
     The UnetExperiment is inherited from the PytorchExperiment. It implements the basic life cycle for a segmentation task with UNet(https://arxiv.org/abs/1505.04597).
@@ -161,5 +160,38 @@ class UNetExperiment(PytorchExperiment):
         self.clog.show_image_grid(pred.data.cpu()[:, 1:2, ], name="unt_val", normalize=True, scale_each=True, n_iter=epoch)
 
     def test(self):
-        # TODO
-        print('TODO: Implement your test() method here')
+        from evaluation.evaluator import aggregate_scores, Evaluator
+        from collections import defaultdict
+
+        self.elog.print('=====TEST=====')
+        self.model.eval()
+
+        pred_dict = defaultdict(list)
+        gt_dict = defaultdict(list)
+
+        batch_counter = 0
+        with torch.no_grad():
+            for data_batch in self.test_data_loader:
+                print('testing...', batch_counter)
+                batch_counter += 1
+
+                # Get data_batches
+                mr_data = data_batch['data'][0].float().to(self.device)
+                mr_target = data_batch['seg'][0].float().to(self.device)
+
+                pred = self.model(mr_data)
+                pred_argmax = torch.argmax(pred.data.cpu(), dim=1, keepdim=True)
+
+                fnames = data_batch['fnames']
+                for i, fname in enumerate(fnames):
+                    pred_dict[fname[0]].append(pred_argmax[i].detach().cpu().numpy())
+                    gt_dict[fname[0]].append(mr_target[i].detach().cpu().numpy())
+
+        test_ref_list = []
+        for key in pred_dict.keys():
+            test_ref_list.append((np.stack(pred_dict[key]), np.stack(gt_dict[key])))
+
+        scores = aggregate_scores(test_ref_list, evaluator=Evaluator, json_author='kleina', json_task=self.config.name, json_name=self.config.name,
+                                  json_output_file=self.elog.work_dir + "/kleina_" + self.config.name + '.json')
+
+        print("Scores:\n", scores)
