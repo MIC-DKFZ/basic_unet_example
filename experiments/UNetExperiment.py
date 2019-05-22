@@ -191,7 +191,7 @@ class UNetExperiment(PytorchExperiment):
         for key in pred_dict.keys():
             test_ref_list.append((np.stack(pred_dict[key]), np.stack(gt_dict[key])))
 
-        scores = aggregate_scores(test_ref_list, evaluator=Evaluator, json_author='kleina', json_task=self.config.name, json_name=self.config.name,
-                                  json_output_file=self.elog.work_dir + "/kleina_" + self.config.name + '.json')
+        scores = aggregate_scores(test_ref_list, evaluator=Evaluator, json_author=self.config.author, json_task=self.config.name, json_name=self.config.name,
+                                  json_output_file=self.elog.work_dir + "/{}_".format(self.config.author) + self.config.name + '.json')
 
         print("Scores:\n", scores)
