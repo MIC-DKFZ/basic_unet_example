@@ -85,7 +85,3 @@ json = {
 ```
 
 `labels` is passed to the evaluator and `**metric_kwargs` is passed to all `.evaluate()` calls.
-
-### Leaderboard
-
-Run `leaderboard/run.py` and specify a folder containing results as json files.
