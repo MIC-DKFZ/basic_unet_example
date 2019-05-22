@@ -32,7 +32,7 @@ def get_config():
         in_channels=1,
         batch_size=8,
         patch_size=64,
-        n_epochs=50,
+        n_epochs=10,
         learning_rate=0.0002,
         fold=0,  # The 'splits.pkl' may contain multiple folds. Here we choose which one we want to use.
 
@@ -40,6 +40,7 @@ def get_config():
 
         # Logging parameters
         name='Basic_Unet',
+        author='kleina',  # Author of this project
         plot_freq=10,  # How often should stuff be shown in visdom
         append_rnd_string=False,
         start_visdom=True,
