@@ -1,8 +1,13 @@
-googledrivedownloader==0.3
+googledrivedownloader==0.4
 MedPy==0.4.0
 SimpleITK==1.2.0
-torch==1.0.1.post2
+torch==1.1.0
 torchfile==0.1.0
 trixi==0.1.2.1
-batchgenerators==0.18.2
+batchgenerators==0.19.3
+
+# Workaround for numpy multiprocessing issues. See (https://github.com/numpy/numpy/issues/11826#issuecomment-425087772)
 numpy==1.14.5
+
+# Workaround for scipy issues
+scipy==1.1.0
