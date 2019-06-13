@@ -25,7 +25,7 @@ def get_config():
     data_root_dir = os.path.abspath('data')  # The path where the downloaded dataset is stored.
 
     c = Config(
-        update_from_argv=True,
+        update_from_argv=True,  # If set 'True', it allows to update each configuration by a cmd/terminal parameter.
 
         # Train parameters
         num_classes=3,
@@ -42,15 +42,15 @@ def get_config():
         name='Basic_Unet',
         author='kleina',  # Author of this project
         plot_freq=10,  # How often should stuff be shown in visdom
-        append_rnd_string=False,
-        start_visdom=True,
+        append_rnd_string=False,  # Appends a random string to the experiment name to make it unique.
+        start_visdom=True,  # You can either start a visom server manually or have trixi start it for you.
 
         do_instancenorm=True,  # Defines whether or not the UNet does a instance normalization in the contracting path
         do_load_checkpoint=False,
         checkpoint_dir='',
 
         # Adapt to your own path, if needed.
-        google_drive_id='1RzPB1_bqzQhlWvU-YGvZzhx2omcDh38C',
+        google_drive_id='1RzPB1_bqzQhlWvU-YGvZzhx2omcDh38C',  # This id is used to download the example dataset.
         dataset_name='Task04_Hippocampus',
         base_dir=os.path.abspath('output_experiment'),  # Where to log the output of the experiment.
 
