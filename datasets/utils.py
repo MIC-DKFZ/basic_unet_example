@@ -16,6 +16,8 @@
 # limitations under the License.
 
 import numpy as np
+import SimpleITK
+import os
 
 
 def reshape(orig_img, append_value=-1024, new_shape=(512, 512, 512)):
@@ -29,3 +31,20 @@ def reshape(orig_img, append_value=-1024, new_shape=(512, 512, 512)):
     # insert temp_img.min() as background value
 
     return reshaped_image
+
+def save_segmentation(array, reference_dir, output_dir, key):
+    image = reference_dir + key.split('/')[-1].replace('npy', 'nii.gz')
+
+    img = SimpleITK.ReadImage(image)
+
+    img_size = img.GetSize()
+    # result_reshaped = np.swapaxes(np.asarray(gt_dict[key]).squeeze(), 0, 2)[0:img_size[0], 0:img_size[1], 0:img_size[2]]
+    result_reshaped = np.swapaxes(array, 0, 2)[0:img_size[2], 0:img_size[1], 0:img_size[0]]
+    image_to_write = SimpleITK.GetImageFromArray(result_reshaped)
+    image_to_write.SetSpacing(img.GetSpacing())
+    image_to_write.SetOrigin(img.GetOrigin())
+    image_to_write.SetDirection(img.GetDirection())
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    SimpleITK.WriteImage(SimpleITK.Cast(image_to_write, SimpleITK.sitkUInt8), os.path.join(output_dir,  key.split('/')[-1].replace('npy', 'nii.gz')) + '.nrrd')
