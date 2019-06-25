@@ -105,6 +105,64 @@ respectively `networks>RecursiveUNet3D.py`. This implementation is done in a rec
 It is therefor very easy to configure the number of downsamplings. Also the type of normalization can be passed as a parameter (default is
 nn.InstanceNorm2d).
 
+## Errors and how to handle them
+In this section we want to collect common errors that may occur when using this repository.
+If you encounter something, feel free to let us know about it and we will include it here.
+
+### Multiple Labels
+Depending on your dataset you might be dealing with multiple labels. For example the
+data from BRATS (https://www.med.upenn.edu/sbia/brats2017.html) has the following labels:
+ ```
+ "labels": {
+	 "0": "background",
+	 "1": "edema",
+	 "2": "non-enhancing tumor",
+	 "3": "enhancing tumour"
+ },
+ ```
+* If you run into an error like this:
+    ```
+    Experiment exited. Checkpoints stored =)
+    INFO:default-z3HafHO4CS:Experiment exited. Checkpoints stored =)
+    Unhandled exception in thread started by <function PytorchExperimentLogger.save_checkpoint_static at 0x7fd07c3e8510>
+    Traceback (most recent call last):
+      File "/python3.5/site-packages/trixi/logger/experiment/pytorchexperimentlogger.py", line 196, in save_checkpoint_static
+       torch.save(to_cpu(kwargs), checkpoint_file)
+      File "/python3.5/site-packages/trixi/logger/experiment/pytorchexperimentlogger.py", line 191, in to_cpu
+        return {key: to_cpu(val) for key, val in obj.items()}
+      File "//python3.5/site-packages/trixi/logger/experiment/pytorchexperimentlogger.py", line 191, in <dictcomp>
+        return {key: to_cpu(val) for key, val in obj.items()}
+      File "/python3.5/site-packages/trixi/logger/experiment/pytorchexperimentlogger.py", line 191, in to_cpu
+        return {key: to_cpu(val) for key, val in obj.items()}
+      File "/python3.5/site-packages/trixi/logger/experiment/pytorchexperimentlogger.py", line 191, in <dictcomp>
+        return {key: to_cpu(val) for key, val in obj.items()}
+      File "/python3.5/site-packages/trixi/logger/experiment/pytorchexperimentlogger.py", line 189, in to_cpu
+        return obj.cpu()
+    RuntimeError: CUDA error: device-side assert triggered
+    ```
+    make sure you updated `num_classes` in your config file. The value of `num_classes` should always
+    equal the number of your labels including background.
+
+* If you run into an error like this:
+    ```
+    File "/home/student/basic_unet/trixi/trixi/experiment/experiment.py", line 108, in run
+      self.process_err(e)
+    File "/home/student/basic_unet/trixi/trixi/experiment/pytorchexperiment.py", line 391, in process_err
+      raise e
+    File "/home/student/basic_unet/trixi/trixi/experiment/experiment.py", line 89, in run
+      self.train(epoch=self._epoch_idx)
+    File "/home/student/PycharmProjects/new_unet/experiments/UNetExperiment.py", line 113, in train
+      loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
+    File "/opt/anaconda3/envs/a_new_test/lib/python3.6/site-packages/torch/nn/modules/module.py", line 493, in call
+      result = self.forward(input, *kwargs)
+    File "/home/student/PycharmProjects/new_unet/loss_functions/dice_loss.py", line 125, in forward
+      yonehot.scatter(1, y, 1)
+    RuntimeError: Invalid index in scatter at /pytorch/aten/src/TH/generic/THTensorEvenMoreMath.cpp:551
+    ```
+    make sure to check your labels again. the error my be caused by the fact that the labels
+    are not sequential. This causes `scatter` to crash. Consider changing the values of
+    your labels.
+
 ## References
 [1] Ronneberger, Olaf, Philipp Fischer, and Thomas Brox. "U-net: Convolutional networks for biomedical image segmentation." 
 International Conference on Medical image computing and computer-assisted intervention. Springer, Cham, 2015.
