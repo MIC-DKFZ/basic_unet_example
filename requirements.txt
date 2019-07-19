@@ -11,3 +11,6 @@ numpy==1.14.5
 
 # Workaround for scipy issues
 scipy==1.1.0
+
+# Workaround for slackclient version issues
+slackclient==2.0.0
