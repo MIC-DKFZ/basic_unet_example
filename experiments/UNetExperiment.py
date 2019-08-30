@@ -108,7 +108,8 @@ class UNetExperiment(PytorchExperiment):
             pred = self.model(data)
             pred_softmax = F.softmax(pred, dim=1)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
 
-            loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
+            #loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
+            loss = self.ce_loss(pred, target.squeeze())
 
 
             loss.backward()
@@ -144,7 +145,8 @@ class UNetExperiment(PytorchExperiment):
                 pred = self.model(data)
                 pred_softmax = F.softmax(pred, dim=1)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
 
-                loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
+                #loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
+                loss = self.ce_loss(pred, target.squeeze())
                 loss_list.append(loss.item())
 
         assert data is not None, 'data is None. Please check if your dataloader works properly'

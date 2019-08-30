@@ -18,7 +18,7 @@
 import matplotlib
 matplotlib.use('Agg')
 
-from configs.Config_unet import get_config
+from configs.Config_unet_spleen import get_config
 from experiments.UNetExperiment import UNetExperiment
 
 if __name__ == "__main__":
