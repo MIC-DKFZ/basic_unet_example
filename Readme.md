@@ -1,4 +1,4 @@
-# Basic U-Net example by MIC@DKFZ
+﻿# Basic U-Net example by MIC@DKFZ
 This python package is an example project of how to use a U-Net [1] for segmentation on medical images using 
 PyTorch (https://www.pytorch.org).
 It was developed at the Division of Medical Image Computing at the German Cancer Research Center (DKFZ).
@@ -8,6 +8,9 @@ Trixi (https://github.com/MIC-DKFZ/trixi) [2] to suit all our deep learning data
 If you have any questions or issues or you encounter a bug, feel free to contact us, open a github issue or ask the community on Gitter:
 [![Gitter](https://badges.gitter.im/basic-Unet/community.svg)](https://gitter.im/basic-Unet/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
+
+| WARNING: This repo was implemented and tested on Linux. We highly recommend using it within a Linux environment. If you use Windows you might experience some issues (see section "Errors and how to handle them" |
+| --- |
 
 ## How to set it up
 The example is very easy to use. Just create a new virtual environment in python and install the requirements. 
@@ -108,6 +111,30 @@ nn.InstanceNorm2d).
 ## Errors and how to handle them
 In this section we want to collect common errors that may occur when using this repository.
 If you encounter something, feel free to let us know about it and we will include it here.
+
+### Windows related issues
+
+If you want to use this repo on Windows, please note, that you have to adapt some things.
+We recommend to install porch via conda on Windows using: `python -m conda install pytorch torchvision cpuonly -c pytorch`
+You then have to remove torch from the requirements.txt.
+
+If you run into issues like the following one:
+
+ ```
+AttributeError: Can't pickle local object 'MultiThreadedDataLoader.get_worker_init_fn.<locals>.init_fn'`
+ ```
+
+try to use SingleProcessDataLoader instead. This error is probably caused by how multithreading is handled in python on Windows.
+So fix this, add `num_processes=0` to your dataloaders:
+
+ ```
+self.train_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, 
+                                        batch_size=self.config.batch_size, keys=tr_keys, num_processes=0)
+self.val_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, 
+                                        batch_size=self.config.batch_size, keys=val_keys, mode="val", do_reshuffle=False, num_processes=0)
+self.test_data_loader = NumpyDataSet(self.config.data_test_dir, target_size=self.config.patch_size, 
+                                        batch_size=self.config.batch_size, keys=test_keys, mode="test", do_reshuffle=False, num_processes=0)
+ ```
 
 ### Multiple Labels
 Depending on your dataset you might be dealing with multiple labels. For example the
