@@ -1,26 +1,26 @@
 ﻿# Basic U-Net example by MIC@DKFZ
-This python package is an example project of how to use a U-Net [1] for segmentation on medical images using 
-PyTorch (https://www.pytorch.org).
+Copyright © German Cancer Research Center (DKFZ), Division of Medical Image Computing (MIC). Please make sure that your usage of this code is in compliance with the code license:
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/MIC-DKFZ/basic_unet_example/blob/master/LICENSE)
+
+This python code is an example project of how to use a U-Net [1] for segmentation on medical images using PyTorch (https://www.pytorch.org).
 It was developed at the Division of Medical Image Computing at the German Cancer Research Center (DKFZ).
-It is also an example on how to use our other python packages batchgenerators (https://github.com/MIC-DKFZ/batchgenerators) and 
+It is also an example of how to use our other python packages batchgenerators (https://github.com/MIC-DKFZ/batchgenerators) and 
 Trixi (https://github.com/MIC-DKFZ/trixi) [2] to suit all our deep learning data augmentation needs.
 
-If you have any questions or issues or you encounter a bug, feel free to contact us, open a github issue or ask the community on Gitter:
+If you have any questions or issues or you encounter a bug, feel free to contact us, open a GitHub issue or ask the community on Gitter:
 [![Gitter](https://badges.gitter.im/basic-Unet/community.svg)](https://gitter.im/basic-Unet/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-
-| WARNING: This repo was implemented and tested on Linux. We highly recommend using it within a Linux environment. If you use Windows you might experience some issues (see section "Errors and how to handle them" |
-| --- |
+> **WARNING**: This repo was implemented and tested on Linux. We highly recommend using it within a Linux environment. If you use Windows you might experience some issues (see
+> section "Errors and how to handle them")
 
 ## How to set it up
 The example is very easy to use. Just create a new virtual environment in python and install the requirements. 
-This example requires python3. It was implemented with python 3.5. We suggest to use virtualenvwrapper (https://virtualenvwrapper.readthedocs.io/en/latest/).
+This example requires python3. It was implemented with python 3.5.
 ```
-mkvirtualenv unet_example
 pip3 install -r requirements.txt
 ```
 
-In this example code we show how to use visdom for live visualization. See the Trixi documentation for more details or information about other tools like tensorboard.
+In this example code, we show how to use visdom for live visualization. See the Trixi documentation for more details or information about other tools like tensorboard.
 After setting up the virtual environment you have to start visdom once so it can download some needed files. You only
 have to do that once. You can stop the visdom server after a few seconds when it finished downloading the files.
 ```
@@ -37,15 +37,13 @@ python3 run_train_pipeline.py
 ```
 
 This will download the Hippocampus dataset from the medical segmentation decathlon (http://medicaldecathlon.com),
-extract and preprocess it and then start the training. The preprocessing loads the images (imagesTr) and the corresponding labels (labelsTr), performes some 
-normalization and padding operations and saves the data as NPY files. The available images are then split into `train`, `validation` and `test` sets.
-The splits are saved to a `splits.pkl` file. The images in `imagesTs` are  not used in the example, because they are the test set for the 
-medical segmentation decathlon and therefor no ground truth is provided.
+extract and preprocess it and then start the training. The preprocessing loads the images (imagesTr) and the corresponding labels (labelsTr), performs some normalization and padding operations and saves the data as NPY files. The available images are then split into `train`, `validation` and `test` sets.
+The splits are saved to a `splits.pkl` file. The images in `imagesTs` are  not used in the example, because they are the test set for the medical segmentation decathlon and
+ therefore no ground truth is provided.
 
 If you run the pipeline again, the dataset will not be downloaded, extracted or preprocessed again. To enforce it, just delete the folder.
 
-The training process will automatically be visualized using trixi/visdom. After starting the training you navigate 
-in your browser to the port which is printed by the training script. Then you should see your loss curve and so on.
+The training process will automatically be visualized using trixi/visdom. After starting the training you navigate in your browser to the port which is printed by the training script. Then you should see your loss curve and so on.
 
 By default, a 2-dimensional U-Net is used. The example also comes with a 3-D version of the network (Özgün Cicek et al.).
 To use the 3-D version, simple use
@@ -53,27 +51,33 @@ To use the 3-D version, simple use
 python train3D.py
 ```
 
-<aside class="warning">
-The 3-D version is not yet tested thoroughly. Use it with caution!
-</aside>
+> **WARNING**: The 3-D version is not yet tested thoroughly. Use it with caution!
 
 ## How to use it for your own data
 This description is work in progress. If you use this repo for your own data please share your experience, so we can update this part.
 
 ### Config
 
-The included `Config_unet.py` is an example config file. You have to adapt this to fit your local environment.
+The included `Config_unet.py` is an example config file. You have to adapt this to fit your local environment, e.g., if you run out of CUDA memory, try to reduce `batch_size` or
+ `patch_size`. All the other parameters should be self-explanatory or described directly in the code comments. 
 
 Choose the `#Train parameters` to fit both, your data and your workstation. 
 With `fold` you can choose which split from your `splits.pkl` you want to use for the training.
 
 You may also need to adapt the paths (`data_root_dir, data_dir, data_test_dir and split_dir`).
 
-You can change the `Logging parameters`, if you want to. With `append_rnd_string`, you can give each experiment you start a unique name.
-If you want to start your visdom server manually, just set `start_visdom=False`.
+You can change the `Logging parameters` if you want to. With `append_rnd_string`, you can give each experiment you start a unique name.
+If you want to start your visdom server manually, just set `start_visdom=False`. If you do not want to use visdom logging at all, just remove the visdom logger from your
+ experiment, e.g. `run_train_pipeline.py` line 47:
+ 
+ ```
+ loggers={
+       "visdom": ("visdom", {"auto_start": c.start_visdom})
+ }
+ ```
 
 ### Datasets
-If you want to use the provided DataLoader, you need to preprocess your data in a appropriate way. An example can be found in the 
+If you want to use the provided DataLoader, you need to preprocess your data appropriately. An example can be found in the 
 "example_dataset" folder. Make sure to load your images and your labels as numpy arrays. The required shape is `(#slices, w,h)`. 
 Then save both using:
 ```
@@ -96,26 +100,25 @@ To train your network, simply run
 python train.py
 ```
 
-You can either edit the config file, or add commandline parameters like this:
+You can either edit the config file or add command line parameters like this:
 ```
 python train.py --n_epochs 100 [...]
 ```
 
 ## Networks
 This example contains a simple implementation of the U-Net [1], which can be found in `networks>UNET.py`. 
-A little more generic version of the U-Net, as well as the 3D U-Net [3] can be found in `networks>RecursiveUNet.py` 
-respectively `networks>RecursiveUNet3D.py`. This implementation is done in a recursive way.
-It is therefor very easy to configure the number of downsamplings. Also the type of normalization can be passed as a parameter (default is
-nn.InstanceNorm2d).
+A little more generic version of the U-Net, as well as the 3D U-Net [3], can be found in `networks>RecursiveUNet.py` 
+respectively `networks>RecursiveUNet3D.py`. This implementation is done recursively.
+It is therefore very easy to configure the number of downsamplings. Also, the type of normalization can be passed as a parameter (default is nn.InstanceNorm2d).
 
 ## Errors and how to handle them
-In this section we want to collect common errors that may occur when using this repository.
+In this section, we want to collect common errors that may occur when using this repository.
 If you encounter something, feel free to let us know about it and we will include it here.
 
 ### Windows related issues
 
-If you want to use this repo on Windows, please note, that you have to adapt some things.
-We recommend to install porch via conda on Windows using: `python -m conda install pytorch torchvision cpuonly -c pytorch`
+If you want to use this repo on Windows, please note, that you have to adapt to some things.
+We recommend to install PyTorch via conda on Windows using: `python -m conda install pytorch torchvision cpuonly -c pytorch`
 You then have to remove torch from the requirements.txt.
 
 If you run into issues like the following one:
@@ -186,9 +189,7 @@ data from BRATS (https://www.med.upenn.edu/sbia/brats2017.html) has the followin
       yonehot.scatter(1, y, 1)
     RuntimeError: Invalid index in scatter at /pytorch/aten/src/TH/generic/THTensorEvenMoreMath.cpp:551
     ```
-    make sure to check your labels again. the error my be caused by the fact that the labels
-    are not sequential. This causes `scatter` to crash. Consider changing the values of
-    your labels.
+    make sure to check your labels again. The error may be caused by the fact that the labels are not sequential. This causes `scatter` to crash. Consider changing the values of      your labels.
 
 ## References
 [1] Ronneberger, Olaf, Philipp Fischer, and Thomas Brox. "U-net: Convolutional networks for biomedical image segmentation." 
