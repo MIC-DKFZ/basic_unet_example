@@ -49,13 +49,13 @@ def get_config():
         do_instancenorm=True,  # Defines whether or not the UNet does a instance normalization in the contracting path
         do_load_checkpoint=True,
 
-        # TODO add your model path to be loaded
-        checkpoint_dir='/home/graf/projects/basic-unet-example/output_experiment/20191113-140853_Basic_Unet/checkpoint/checkpoint_current',
-
         # Adapt to your own path, if needed.
         google_drive_id='1jzeNU1EKnK81PyTsrx0ujfNl-t0Jo8uE', #spleen
         dataset_name='Task09_Spleen',
         base_dir=os.path.abspath('output_experiment'),  # Where to log the output of the experiment.
+
+        # Set your model path to be loaded
+        checkpoint_dir=os.path.join(os.path.abspath('output_experiment'), '20200108-035420_Basic_Unet/checkpoint/checkpoint_current'),
 
         data_root_dir=data_root_dir,  # The path where the downloaded dataset is stored.
         data_dir=os.path.join(data_root_dir, 'Task09_Spleen/preprocessed'),  # This is where your training and validation data is stored
