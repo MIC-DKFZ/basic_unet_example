@@ -111,7 +111,6 @@ class UNetExperiment(PytorchExperiment):
             #loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
             loss = self.ce_loss(pred, target.squeeze())
 
-
             loss.backward()
             self.optimizer.step()
 
@@ -197,3 +196,46 @@ class UNetExperiment(PytorchExperiment):
                                   json_output_file=self.elog.work_dir + "/{}_".format(self.config.author) + self.config.name + '.json')
 
         print("Scores:\n", scores)
+
+    def segment_single_image(self, data):
+        self.model = UNet(num_classes=self.config.num_classes, in_channels=self.config.in_channels)
+        self.device = torch.device(self.config.device if torch.cuda.is_available() else "cpu")
+
+        # TODO create batches out of the slices in order to put it on GPU
+        # unless we batchify the data, we'll use CPU, then just use the line above the comments
+        self.device = torch.device("cpu")
+
+        if self.config.do_load_checkpoint:
+            if self.config.checkpoint_dir == '':
+                print('checkpoint_dir is empty, please provide directory to load checkpoint.')
+            else:
+                self.load_checkpoint(name=self.config.checkpoint_dir, save_types=("model"))
+
+        self.elog.print("=====SEGMENT_SINGLE_IMAGE=====")
+        self.model.eval()
+
+        # Desired shape = [b, c, w, h]
+        # split into even chunks (lets use size)
+        with torch.no_grad():
+
+            mr_data = data.float().to(self.device)
+
+            # split into batches
+            ###bs = self.config.batch_size
+
+            ###blocksize = int(mr_data.shape[0]/bs)
+            ###chunks = [mr_data[i:i+blocksize, ::, ::, ::] for i in range(0, mr_data.shape[0], blocksize)]
+            ###pred_list = []
+            ###for data_batch in chunks:
+            ###    pred_dict = self.model(data_batch)
+            ###    pred_list.append(pred_dict)
+
+            ###pred = np.concatenate(pred_list)
+
+            pred = self.model(mr_data)
+            pred_argmax = torch.argmax(pred.data.cpu(), dim=1, keepdim=True)
+
+        # detach result and put it back to cpu so that we can work with, create a numpy array
+        result = pred_argmax.short().detach().cpu().numpy()
+
+        return result
