@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
+<<<<<<< HEAD
 # Copyright 2019 Division of Medical Image Computing, German Cancer Research Center (DKFZ)
+=======
+# Copyright 2017 Division of Medical Image Computing, German Cancer Research Center (DKFZ)
+>>>>>>> T26764_add_segmentation_routine
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +29,9 @@ if __name__ == "__main__":
     step = 0
 
     while True:
-        result = subprocess.run(['python', 'run_train_pipeline.py', '{}'.format(n_epochs), '{}'.format(learning_rate)])
+        result = subprocess.run(['python', 'run_train_pipeline.py',
+                                 '--n_epochs', '{}'.format(n_epochs),
+                                 '--learning_rate', '{}'.format(learning_rate)])
         # var = result.stdout
 
         if divmod(step, 2)[1] == 0:

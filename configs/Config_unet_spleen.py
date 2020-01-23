@@ -31,9 +31,9 @@ def get_config():
         # Train parameters
         num_classes=2,
         in_channels=1,
-        batch_size=4,
+        batch_size=3,       # works with 6 on GB GPU
         patch_size=512,
-        n_epochs=10,
+        n_epochs=1,
         learning_rate=0.0002,
         fold=0,  # The 'splits.pkl' may contain multiple folds. Here we choose which one we want to use.
 
@@ -60,6 +60,9 @@ def get_config():
         data_test_dir=os.path.join(data_root_dir, 'Task09_Spleen/preprocessed'),  # This is where your test data is stored
 
         split_dir=os.path.join(data_root_dir, 'Task09_Spleen'),  # This is where the 'splits.pkl' file is located, that holds your splits.
+
+        # execute a segmentation process on a specific image using the model
+        model_dir=os.path.join(os.path.abspath('output_experiment'), '20200108-035420_Basic_Unet/checkpoint/checkpoint_current'),   # the model being used for segmentation
     )
 
     print(c)
