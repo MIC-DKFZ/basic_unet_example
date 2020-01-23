@@ -23,6 +23,7 @@ import numpy as np
 
 from datasets.utils import reshape
 from utilities.file_and_folder_operations import subfiles
+import torch
 
 
 def preprocess_data(root_dir, y_shape=64, z_shape=64):
@@ -63,3 +64,34 @@ def preprocess_data(root_dir, y_shape=64, z_shape=64):
         print(f)
 
     print(total)
+
+
+def preprocess_single_file(image_file, y_shape=64, z_shape=64):
+    image, image_header = load(image_file)
+    image = (image - image.min()) / (image.max() - image.min())
+
+    image = np.swapaxes(image, 0, 2)
+    image = np.swapaxes(image, 1, 2)
+
+    # TODO check original shape and reshape data if necessary
+    # image = reshape(image, append_value=0, new_shape=(image.shape[0], y_shape, z_shape))
+    # numpy_array = np.array(image)
+
+    # Image shape is [b, w, h] and has one channel only
+    # Desired shape = [b, c, w, h]
+    # --> expand to have only one channel c=1 - data is in desired shape
+    data = np.expand_dims(image, 1)
+
+    return torch.from_numpy(data), image_header
+
+
+def postprocess_single_image(image):
+    # desired shape is [b w h]
+    result_converted = image[::, 0, ::, ::]
+    result_mapped = [i * 255 for i in result_converted]
+
+    # swap axes back, like we were supposed to do so
+    result_mapped = np.swapaxes(result_mapped, 2, 1)
+    result_mapped = np.swapaxes(result_mapped, 2, 0)
+
+    return result_mapped
