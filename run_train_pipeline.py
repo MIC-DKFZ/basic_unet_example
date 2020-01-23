@@ -22,24 +22,16 @@ import os
 import sys
 from os.path import exists
 from configs.Config_unet_spleen import get_config
-from datasets.example_dataset.create_splits import create_splits
-from datasets.example_dataset.download_dataset import download_dataset
-from datasets.example_dataset.preprocessing import preprocess_data
+from datasets.spleen.create_splits import create_splits
+from datasets.spleen.download_dataset import download_dataset
+from datasets.spleen.preprocessing import preprocess_data
 from experiments.UNetExperiment import UNetExperiment
 
 
 if __name__ == "__main__":
     c = get_config()
 
-    if len(sys.argv) == 1:
-        print("Usage: {} [epochs [learning_rate]].".format(sys.argv[0]))
-    else:
-        if len(sys.argv) >= 2:
-            c.n_epochs = int(sys.argv[1])
-        if len(sys.argv) >= 3:
-            c.learning_rate = float(sys.argv[2])
-
-    print("EPOCHS = {} / LEARNING RATE = {}".format(c.n_epochs, c.learning_rate))
+    print("Executing: EPOCHS = {} / LEARNING RATE = {}".format(c.n_epochs, c.learning_rate))
 
     download_dataset(dest_path=c.data_root_dir, dataset=c.dataset_name, id=c.google_drive_id)
 

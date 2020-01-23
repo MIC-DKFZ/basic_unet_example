@@ -25,7 +25,9 @@ if __name__ == "__main__":
     step = 0
 
     while True:
-        result = subprocess.run(['python', 'run_train_pipeline.py', '{}'.format(n_epochs), '{}'.format(learning_rate)])
+        result = subprocess.run(['python', 'run_train_pipeline.py',
+                                 '--n_epochs', '{}'.format(n_epochs),
+                                 '--learning_rate', '{}'.format(learning_rate)])
         # var = result.stdout
 
         if divmod(step, 2)[1] == 0:
