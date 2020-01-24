@@ -59,6 +59,9 @@ def get_config():
         data_test_dir=os.path.join(data_root_dir, 'Task04_Hippocampus/preprocessed'),  # This is where your test data is stored
 
         split_dir=os.path.join(data_root_dir, 'Task04_Hippocampus'),  # This is where the 'splits.pkl' file is located, that holds your splits.
+
+        # execute a segmentation process on a specific image using the model
+        model_dir=os.path.join(os.path.abspath('output_experiment'), '20200108-035420_Basic_Unet/checkpoint/checkpoint_current'), # the model being used for segmentation
     )
 
     print(c)
