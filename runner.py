@@ -28,7 +28,6 @@ if __name__ == "__main__":
         result = subprocess.run(['python', 'run_train_pipeline.py',
                                  '--n_epochs', '{}'.format(n_epochs),
                                  '--learning_rate', '{}'.format(learning_rate)])
-        # var = result.stdout
 
         if divmod(step, 2)[1] == 0:
             n_epochs = n_epochs + 20
