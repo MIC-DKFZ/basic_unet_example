@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-<<<<<<< HEAD
 # Copyright 2019 Division of Medical Image Computing, German Cancer Research Center (DKFZ)
-=======
-# Copyright 2017 Division of Medical Image Computing, German Cancer Research Center (DKFZ)
->>>>>>> T26764_add_segmentation_routine
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
