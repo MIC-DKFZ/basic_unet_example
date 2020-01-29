@@ -22,12 +22,12 @@ import tarfile
 from google_drive_downloader import GoogleDriveDownloader as gdd
 
 def download_dataset(dest_path, dataset, id='1RzPB1_bqzQhlWvU-YGvZzhx2omcDh38C'):
-    tar_path = os.path.join(dest_path, dataset) + '.tar'
-    gdd.download_file_from_google_drive(file_id=id,
-                                        dest_path=tar_path, overwrite=False,
-                                        unzip=False)
-
     if not exists(os.path.join(dest_path, dataset)):
+        tar_path = os.path.join(dest_path, dataset) + '.tar'
+        gdd.download_file_from_google_drive(file_id=id,
+                                            dest_path=tar_path, overwrite=False,
+                                            unzip=False)
+
         print('Extracting data [STARTED]')
         tar = tarfile.open(tar_path)
         tar.extractall(dest_path)

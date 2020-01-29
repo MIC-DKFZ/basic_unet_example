@@ -19,19 +19,16 @@ import os
 from os.path import exists
 import tarfile
 
-import gdown
 from google_drive_downloader import GoogleDriveDownloader as gdd
-from pygdrive3 import service
-from googleapiclient.http import MediaIoBaseDownload
 
 
 def download_dataset(dest_path, dataset, id=''):
-    tar_path = os.path.join(dest_path, dataset) + '.tar'
-    gdd.download_file_from_google_drive(file_id=id,
-                                        dest_path=tar_path, overwrite=False,
-                                        unzip=False)
-
     if not exists(os.path.join(dest_path, dataset)):
+        tar_path = os.path.join(dest_path, dataset) + '.tar'
+        gdd.download_file_from_google_drive(file_id=id,
+                                            dest_path=tar_path, overwrite=False,
+                                            unzip=False)
+
         print('Extracting data [STARTED]')
         tar = tarfile.open(tar_path)
         tar.extractall(dest_path)
@@ -41,29 +38,3 @@ def download_dataset(dest_path, dataset, id=''):
         print('Data already downloaded. Files are not extracted again.')
 
     return
-
-
-def download_dataset_gdown():
-    url = 'https://drive.google.com/uc?id=1jzeNU1EKnK81PyTsrx0ujfNl-t0Jo8uE'
-    # url = 'https://drive.google.com/uc?id=1RzPB1_bqzQhlWvU-YGvZzhx2omcDh38C'
-    output = 'spleen.tar'
-    gdown.download(url, output, quiet=False)
-
-
-def download_dataset_google_api():
-    drive_service = service.DriveService()
-    file_id = '0BwwA4oUTeiV1UVNwOHItT0xfa2M'
-    request = drive_service.files().get_media(fileId=file_id)
-    fh = os.io.BytesIO()
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while done is False:
-        status, done = downloader.next_chunk()
-        print
-        "Download %d%%." % int(status.progress() * 100)
-
-
-
-
-
-

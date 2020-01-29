@@ -21,17 +21,17 @@ matplotlib.use('Agg')
 import os
 import sys
 from os.path import exists
-from configs.Config_unet_spleen import get_config
-from datasets.spleen.create_splits import create_splits
-from datasets.spleen.download_dataset import download_dataset
-from datasets.spleen.preprocessing import preprocess_data
+from configs.Config_unet import get_config
+from datasets.example_dataset.create_splits import create_splits
+from datasets.example_dataset.download_dataset import download_dataset
+from datasets.example_dataset.preprocessing import preprocess_data
 from experiments.UNetExperiment import UNetExperiment
 
 
 if __name__ == "__main__":
     c = get_config()
 
-    print("Executing: EPOCHS = {} / LEARNING RATE = {}".format(c.n_epochs, c.learning_rate))
+    # print("Executing: EPOCHS = {} / LEARNING RATE = {}".format(c.n_epochs, c.learning_rate))
 
     download_dataset(dest_path=c.data_root_dir, dataset=c.dataset_name, id=c.google_drive_id)
 
