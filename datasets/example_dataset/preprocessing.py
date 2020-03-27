@@ -17,12 +17,12 @@
 
 from collections import defaultdict
 
+from batchgenerators.augmentations.utils import pad_nd_image
 from medpy.io import load
 import os
 import numpy as np
 import torch
 
-from datasets.utils import reshape
 from utilities.file_and_folder_operations import subfiles
 
 
@@ -58,8 +58,8 @@ def preprocess_data(root_dir, y_shape=64, z_shape=64):
         # normalize images
         image = (image - image.min())/(image.max()-image.min())
 
-        image = reshape(image, append_value=0, new_shape=(image.shape[0], y_shape, z_shape))
-        label = reshape(label, append_value=0, new_shape=(label.shape[0], y_shape, z_shape))
+        image = pad_nd_image(image, (image.shape[0], y_shape, z_shape), "constant", kwargs={'constant_values': image.min()})
+        label = pad_nd_image(label, (image.shape[0], y_shape, z_shape), "constant", kwargs={'constant_values': label.min()})
 
         result = np.stack((image, label))
 
@@ -71,12 +71,9 @@ def preprocess_data(root_dir, y_shape=64, z_shape=64):
         print(class_stats[i], class_stats[i]/total)
 
 
-def preprocess_single_file(image_file, y_shape=64, z_shape=64):
+def preprocess_single_file(image_file):
     image, image_header = load(image_file)
     image = (image - image.min()) / (image.max() - image.min())
-
-    #image = np.swapaxes(image, 0, 2)
-    #image = np.swapaxes(image, 1, 2)
 
     data = np.expand_dims(image, 1)
 
@@ -87,8 +84,5 @@ def postprocess_single_image(image):
     # desired shape is [b w h]
     result_converted = image[::, 0, ::, ::]
     result_mapped = [i * 255 for i in result_converted]
-
-    #result_mapped = np.swapaxes(result_mapped, 2, 1)
-    #result_mapped = np.swapaxes(result_mapped, 2, 0)
 
     return result_mapped
