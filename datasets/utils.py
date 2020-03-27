@@ -15,17 +15,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
+import os
+from os.path import exists
+import tarfile
+
+from google_drive_downloader import GoogleDriveDownloader as gdd
 
 
-def reshape(orig_img, append_value=-1024, new_shape=(512, 512, 512)):
-    reshaped_image = np.zeros(new_shape)
-    reshaped_image[...] = append_value
-    x_offset = 0
-    y_offset = 0  # (new_shape[1] - orig_img.shape[1]) // 2
-    z_offset = 0  # (new_shape[2] - orig_img.shape[2]) // 2
+def download_dataset(dest_path, dataset, id=''):
+    if not exists(os.path.join(dest_path, dataset)):
+        tar_path = os.path.join(dest_path, dataset) + '.tar'
+        gdd.download_file_from_google_drive(file_id=id,
+                                            dest_path=tar_path, overwrite=False,
+                                            unzip=False)
 
-    reshaped_image[x_offset:orig_img.shape[0]+x_offset, y_offset:orig_img.shape[1]+y_offset, z_offset:orig_img.shape[2]+z_offset] = orig_img
-    # insert temp_img.min() as background value
+        print('Extracting data [STARTED]')
+        tar = tarfile.open(tar_path)
+        tar.extractall(dest_path)
+        print('Extracting data [DONE]')
+    else:
+        print('Data already downloaded. Files are not extracted again.')
+        print('Data already downloaded. Files are not extracted again.')
 
-    return reshaped_image
+    return

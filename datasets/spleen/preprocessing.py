@@ -21,7 +21,6 @@ from medpy.io import load
 import os
 import numpy as np
 
-from datasets.utils import reshape
 from utilities.file_and_folder_operations import subfiles
 import torch
 
@@ -66,7 +65,7 @@ def preprocess_data(root_dir, y_shape=64, z_shape=64):
     print(total)
 
 
-def preprocess_single_file(image_file, y_shape=64, z_shape=64):
+def preprocess_single_file(image_file):
     image, image_header = load(image_file)
     image = (image - image.min()) / (image.max() - image.min())
 

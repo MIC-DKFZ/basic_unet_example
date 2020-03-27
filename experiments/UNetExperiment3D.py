@@ -23,7 +23,6 @@ import numpy as np
 import torch
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-import torch.nn.functional as F
 
 from datasets.three_dim.NumpyDataLoader import NumpyDataSet
 from trixi.experiment.pytorchexperiment import PytorchExperiment

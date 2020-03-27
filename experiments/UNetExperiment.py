@@ -17,7 +17,6 @@
 
 import os
 import pickle
-from collections import OrderedDict
 
 import numpy as np
 import torch
@@ -28,8 +27,9 @@ import torch.nn.functional as F
 from datasets.two_dim.NumpyDataLoader import NumpyDataSet
 from trixi.experiment.pytorchexperiment import PytorchExperiment
 
-from networks.RecursiveUNet import UNet
+from networks.UNET import UNet
 from loss_functions.dice_loss import SoftDiceLoss
+
 
 class UNetExperiment(PytorchExperiment):
     """
@@ -108,8 +108,8 @@ class UNetExperiment(PytorchExperiment):
             pred = self.model(data)
             pred_softmax = F.softmax(pred, dim=1)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
 
-            #loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
-            loss = self.ce_loss(pred, target.squeeze())
+            loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
+            # loss = self.ce_loss(pred, target.squeeze())
 
             loss.backward()
             self.optimizer.step()
@@ -144,8 +144,7 @@ class UNetExperiment(PytorchExperiment):
                 pred = self.model(data)
                 pred_softmax = F.softmax(pred, dim=1)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
 
-                #loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
-                loss = self.ce_loss(pred, target.squeeze())
+                loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
                 loss_list.append(loss.item())
 
         assert data is not None, 'data is None. Please check if your dataloader works properly'
@@ -234,7 +233,7 @@ class UNetExperiment(PytorchExperiment):
                 pred_dict = self.model(mr_data)
                 pred_list.append(pred_dict.cpu())
 
-            pred = torch.Tensor( np.concatenate(pred_list) )
+            pred = torch.Tensor(np.concatenate(pred_list))
             pred_argmax = torch.argmax(pred, dim=1, keepdim=True)
 
         # detach result and put it back to cpu so that we can work with, create a numpy array

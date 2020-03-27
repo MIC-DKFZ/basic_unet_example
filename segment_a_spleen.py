@@ -16,13 +16,9 @@
 # limitations under the License.
 
 import os
-from os.path import exists
 import sys
 
-from medpy.io import load
 from medpy.io import save
-import numpy as np
-from datasets.utils import reshape
 
 from configs.Config_unet_spleen import get_config
 from datasets.spleen.preprocessing import preprocess_single_file, postprocess_single_image

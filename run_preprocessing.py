@@ -16,13 +16,11 @@
 # limitations under the License.
 
 import os
-from os.path import exists
 
 from configs.Config_unet import get_config
 from datasets.example_dataset.create_splits import create_splits
-from datasets.example_dataset.download_dataset import download_dataset
+from datasets.utils import download_dataset
 from datasets.example_dataset.preprocessing import preprocess_data
-from experiments.UNetExperiment import UNetExperiment
 
 if __name__ == "__main__":
     c = get_config()

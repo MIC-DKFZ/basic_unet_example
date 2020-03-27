@@ -53,10 +53,10 @@ class NumpyDataSet(object):
     """
     TODO
     """
-    def __init__(self, base_dir, mode="train", batch_size=16, num_batches=10000000, seed=None, num_processes=8, num_cached_per_queue=8 * 4, target_size=128,
+    def __init__(self, base_dir, mode="train", batch_size=16, num_batches=10000000, num_processes=8, num_cached_per_queue=8 * 4, target_size=128,
                  file_pattern='*.npy', label_slice=1, input_slice=(0,), do_reshuffle=True, keys=None):
 
-        data_loader = NumpyDataLoader(base_dir=base_dir, mode=mode, batch_size=batch_size, num_batches=num_batches, seed=seed, file_pattern=file_pattern,
+        data_loader = NumpyDataLoader(base_dir=base_dir, mode=mode, batch_size=batch_size, num_batches=num_batches, file_pattern=file_pattern,
                                       input_slice=input_slice, label_slice=label_slice, keys=keys)
 
         self.data_loader = data_loader
@@ -66,7 +66,7 @@ class NumpyDataSet(object):
 
         self.transforms = get_transforms(mode=mode, target_size=target_size)
         self.augmenter = MultiThreadedDataLoader(data_loader, self.transforms, num_processes=num_processes,
-                                                 num_cached_per_queue=num_cached_per_queue, seeds=seed,
+                                                 num_cached_per_queue=num_cached_per_queue,
                                                  shuffle=do_reshuffle)
         self.augmenter.restart()
 
@@ -85,7 +85,7 @@ class NumpyDataSet(object):
 
 class NumpyDataLoader(SlimDataLoaderBase):
     def __init__(self, base_dir, mode="train", batch_size=16, num_batches=10000000,
-                 seed=None, file_pattern='*.npy', label_slice=1, input_slice=(0,), keys=None):
+                 file_pattern='*.npy', label_slice=1, input_slice=(0,), keys=None):
 
         self.files, self.file_len, self.slices = load_dataset(base_dir=base_dir, pattern=file_pattern, slice_offset=0, keys=keys, )
         super(NumpyDataLoader, self).__init__(self.slices, batch_size, num_batches)
@@ -158,7 +158,7 @@ class NumpyDataLoader(SlimDataLoaderBase):
 
             numpy_array = np.load(fn_name, mmap_mode="r")
 
-            numpy_slice = numpy_array[ :, slice[1], ]
+            numpy_slice = numpy_array[:, slice[1], ]
             data.append(numpy_slice[None, self.input_slice[0]])   # 'None' keeps the dimension
 
             if self.label_slice is not None:
