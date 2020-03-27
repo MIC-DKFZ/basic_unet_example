@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from configs.Config_unet import get_config
+from configs.Config_unet_opt_3D import get_config
 from experiments.UNetExperiment3D import UNetExperiment3D
 
 if __name__ == "__main__":
