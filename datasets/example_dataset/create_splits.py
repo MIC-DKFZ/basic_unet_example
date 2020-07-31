@@ -34,9 +34,8 @@ def create_splits(output_dir, image_dir):
         raise ValueError("Assure more total samples exist than train test and val samples combined!")
 
     splits = []
+    sample_set = {sample[:-4] for sample in npy_files.copy()}  # Remove the file extension
     for split in range(0, 5):
-        image_list = npy_files.copy()
-        sample_set = {sample[:-4] for sample in image_list}  # Remove the file extension
 
         train_set = set(random.sample(sample_set, trainset_size))
         val_set = set(random.sample(sample_set - train_set, valset_size))
