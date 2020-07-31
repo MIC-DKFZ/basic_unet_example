@@ -19,38 +19,33 @@ import pickle
 from utilities.file_and_folder_operations import subfiles
 
 import os
-import numpy as np
+import random
 
 
 def create_splits(output_dir, image_dir):
     npy_files = subfiles(image_dir, suffix=".npy", join=False)
+    sample_size = len(npy_files)
 
-    trainset_size = len(npy_files)*50//100
-    valset_size = len(npy_files)*25//100
-    testset_size = len(npy_files)*25//100
+    trainset_size = sample_size*50//100
+    valset_size = sample_size*25//100
+    testset_size = sample_size*25//100
+
+    if sample_size < (trainset_size + valset_size + testset_size):
+        raise ValueError("Assure more total samples exist than train test and val samples combined!")
 
     splits = []
     for split in range(0, 5):
         image_list = npy_files.copy()
-        trainset = []
-        valset = []
-        testset = []
-        for i in range(0, trainset_size):
-            patient = np.random.choice(image_list)
-            image_list.remove(patient)
-            trainset.append(patient[:-4])
-        for i in range(0, valset_size):
-            patient = np.random.choice(image_list)
-            image_list.remove(patient)
-            valset.append(patient[:-4])
-        for i in range(0, testset_size):
-            patient = np.random.choice(image_list)
-            image_list.remove(patient)
-            testset.append(patient[:-4])
+        sample_set = {sample[:-4] for sample in image_list}  # Remove the file extension
+
+        train_set = set(random.sample(sample_set, trainset_size))
+        val_set = set(random.sample(sample_set - train_set, valset_size))
+        test_set = set(random.sample(sample_set - train_set - val_set, testset_size))
+
         split_dict = dict()
-        split_dict['train'] = trainset
-        split_dict['val'] = valset
-        split_dict['test'] = testset
+        split_dict['train'] = list(train_set)
+        split_dict['val'] = list(val_set)
+        split_dict['test'] = list(test_set)
 
         splits.append(split_dict)
 
