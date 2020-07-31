@@ -26,9 +26,9 @@ def create_splits(output_dir, image_dir):
     npy_files = subfiles(image_dir, suffix=".npy", join=False)
     sample_size = len(npy_files)
 
-    trainset_size = sample_size*50//100
-    valset_size = sample_size*25//100
-    testset_size = sample_size*25//100
+    trainset_size = sample_size * 50 // 100
+    valset_size = sample_size * 25 // 100
+    testset_size = sample_size * 25 // 100
 
     if sample_size < (trainset_size + valset_size + testset_size):
         raise ValueError("Assure more total samples exist than train test and val samples combined!")
@@ -36,7 +36,6 @@ def create_splits(output_dir, image_dir):
     splits = []
     sample_set = {sample[:-4] for sample in npy_files.copy()}  # Remove the file extension
     for split in range(0, 5):
-
         train_set = set(random.sample(sample_set, trainset_size))
         val_set = set(random.sample(sample_set - train_set, valset_size))
         test_set = set(random.sample(sample_set - train_set - val_set, testset_size))
@@ -48,5 +47,6 @@ def create_splits(output_dir, image_dir):
 
         splits.append(split_dict)
 
+    # Todo: IMO it is better to write that dict as JSON. This (unlike pickle) allows the user to inspect the file with an editor
     with open(os.path.join(output_dir, 'splits.pkl'), 'wb') as f:
         pickle.dump(splits, f)
