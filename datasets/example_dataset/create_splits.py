@@ -35,10 +35,11 @@ def create_splits(output_dir, image_dir):
 
     splits = []
     sample_set = {sample[:-4] for sample in npy_files.copy()}  # Remove the file extension
+    test_set = set(random.sample(sample_set, testset_size))  # IMO the Testset should be static for all splits
+    # (otherwise we leak test samples into train batches)
     for split in range(0, 5):
-        train_set = set(random.sample(sample_set, trainset_size))
-        val_set = set(random.sample(sample_set - train_set, valset_size))
-        test_set = set(random.sample(sample_set - train_set - val_set, testset_size))
+        train_set = set(random.sample(sample_set - test_set, trainset_size))
+        val_set = set(random.sample(sample_set - train_set - test_set, valset_size))
 
         split_dict = dict()
         split_dict['train'] = list(train_set)
