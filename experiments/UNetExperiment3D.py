@@ -84,7 +84,7 @@ class UNetExperiment3D(PytorchExperiment):
             if self.config.checkpoint_dir == '':
                 print('checkpoint_dir is empty, please provide directory to load checkpoint.')
             else:
-                self.load_checkpoint(name=self.config.checkpoint_dir, save_types=("model"))
+                self.load_checkpoint(name=self.config.checkpoint_dir, save_types=("model",))
 
         self.save_checkpoint(name="checkpoint_start")
         self.elog.print('Experiment set up.')
@@ -145,7 +145,7 @@ class UNetExperiment3D(PytorchExperiment):
         assert data is not None, 'data is None. Please check if your dataloader works properly'
         self.scheduler.step(np.mean(loss_list))
 
-        self.elog.print('Epoch: %d Loss: %.4f' % (self._epoch_idx, np.mean(loss_list)))
+        self.elog.print('Epoch: %d Loss: %.4f' % (self._epoch_idx, float(np.mean(loss_list))))
 
         self.add_result(value=np.mean(loss_list), name='Val_Loss', tag='Loss', counter=epoch+1)
 
