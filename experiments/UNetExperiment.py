@@ -51,24 +51,23 @@ class UNetExperiment(PytorchExperiment):
     """
 
     def setup(self):
-
-        pkl_dir = self.config["split_dir"]
+        pkl_dir = self.config.split_dir
         with open(os.path.join(pkl_dir, "splits.pkl"), 'rb') as f:
             splits = pickle.load(f)
 
-        tr_keys = splits[self.config["fold"]]['train']
-        val_keys = splits[self.config["fold"]]['val']
-        test_keys = splits[self.config["fold"]]['test']
+        tr_keys = splits[self.config.fold]['train']
+        val_keys = splits[self.config.fold]['val']
+        test_keys = splits[self.config.fold]['test']
 
-        self.device = torch.device(self.config["device"] if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(self.config.device if torch.cuda.is_available() else "cpu")
 
-        self.train_data_loader = NumpyDataSet(self.config["data_dir"], target_size=self.config["patch_size"], batch_size=self.config["batch_size"],
+        self.train_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
                                               keys=tr_keys)
-        self.val_data_loader = NumpyDataSet(self.config["data_dir"], target_size=self.config["patch_size"], batch_size=self.config["batch_size"],
+        self.val_data_loader = NumpyDataSet(self.config.data_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
                                             keys=val_keys, mode="val", do_reshuffle=False)
-        self.test_data_loader = NumpyDataSet(self.config["data_test_dir"], target_size=self.config["patch_size"], batch_size=self.config["batch_size"],
+        self.test_data_loader = NumpyDataSet(self.config.data_test_dir, target_size=self.config.patch_size, batch_size=self.config.batch_size,
                                              keys=test_keys, mode="test", do_reshuffle=False)
-        self.model = UNet(num_classes=self.config["num_classes"], in_channels=self.config["in_channels"])
+        self.model = UNet(num_classes=self.config.num_classes, in_channels=self.config.in_channels)
 
         self.model.to(self.device)
 
@@ -77,17 +76,15 @@ class UNetExperiment(PytorchExperiment):
         self.dice_loss = SoftDiceLoss(batch_dice=True)  # Softmax for DICE Loss!
         self.ce_loss = torch.nn.CrossEntropyLoss()  # No softmax for CE Loss -> is implemented in torch!
 
-        self.optimizer = optim.Adam(self.model.parameters(), lr=self.config["learning_rate"])
+        self.optimizer = optim.Adam(self.model.parameters(), lr=self.config.learning_rate)
         self.scheduler = ReduceLROnPlateau(self.optimizer, 'min')
 
         # If directory for checkpoint is provided, we load it.
-        if self.config["do_load_checkpoint"]:
-            if self.config["checkpoint_dir"] == '':
-                raise ValueError('Loading Checkpoint set as True but no checkpoint directory given!')
+        if self.config.do_load_checkpoint:
+            if self.config.checkpoint_dir == '':
+                print('checkpoint_dir is empty, please provide directory to load checkpoint.')
             else:
-                if not os.path.exists(self.config["checkpoint_dir"]):
-                    raise NotADirectoryError("Given Path does not lead to an existing directory: {}".format(self.config["checkpoint_dir"]))
-                self.load_checkpoint(name=self.config["checkpoint_dir"], save_types=("model"))
+                self.load_checkpoint(name=self.config.checkpoint_dir, save_types=("model",))
 
         self.save_checkpoint(name="checkpoint_start")
         self.elog.print('Experiment set up.')
@@ -118,11 +115,10 @@ class UNetExperiment(PytorchExperiment):
             self.optimizer.step()
 
             # Some logging and plotting
-            if (batch_counter % self.config["plot_freq"]) == 0:
+            if (batch_counter % self.config.plot_freq) == 0:
                 self.elog.print('Epoch: {0} Loss: {1:.4f}'.format(self._epoch_idx, loss))
 
-                self.add_result(value=loss.item(), name='Train_Loss', tag='Loss',
-                                counter=epoch + (batch_counter / self.train_data_loader.data_loader.num_batches))
+                self.add_result(value=loss.item(), name='Train_Loss', tag='Loss', counter=epoch + (batch_counter / self.train_data_loader.data_loader.num_batches))
 
                 self.clog.show_image_grid(data.float().cpu(), name="data", normalize=True, scale_each=True, n_iter=epoch)
                 self.clog.show_image_grid(target.float().cpu(), name="mask", title="Mask", n_iter=epoch)
@@ -146,8 +142,7 @@ class UNetExperiment(PytorchExperiment):
                 target = data_batch['seg'][0].long().to(self.device)
 
                 pred = self.model(data)
-                pred_softmax = F.softmax(pred,
-                                         dim=1)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
+                pred_softmax = F.softmax(pred, dim=1)  # We calculate a softmax, because our SoftDiceLoss expects that as an input. The CE-Loss does the softmax internally.
 
                 loss = self.dice_loss(pred_softmax, target.squeeze()) + self.ce_loss(pred, target.squeeze())
                 loss_list.append(loss.item())
@@ -157,7 +152,7 @@ class UNetExperiment(PytorchExperiment):
 
         self.elog.print('Epoch: %d Loss: %.4f' % (self._epoch_idx, float(np.mean(loss_list))))
 
-        self.add_result(value=np.mean(loss_list), name='Val_Loss', tag='Loss', counter=epoch + 1)
+        self.add_result(value=np.mean(loss_list), name='Val_Loss', tag='Loss', counter=epoch+1)
 
         self.clog.show_image_grid(data.float().cpu(), name="data_val", normalize=True, scale_each=True, n_iter=epoch)
         self.clog.show_image_grid(target.float().cpu(), name="mask_val", title="Mask", n_iter=epoch)
@@ -196,21 +191,20 @@ class UNetExperiment(PytorchExperiment):
         for key in pred_dict.keys():
             test_ref_list.append((np.stack(pred_dict[key]), np.stack(gt_dict[key])))
 
-        scores = aggregate_scores(test_ref_list, evaluator=Evaluator, json_author=self.config["author"], json_task=self.config["name"],
-                                  json_name=self.config["name"],
-                                  json_output_file=self.elog.work_dir + "/{}_".format(self.config["author"]) + self.config["name"] + '.json')
+        scores = aggregate_scores(test_ref_list, evaluator=Evaluator, json_author=self.config.author, json_task=self.config.name, json_name=self.config.name,
+                                  json_output_file=self.elog.work_dir + "/{}_".format(self.config.author) + self.config.name + '.json')
 
         print("Scores:\n", scores)
 
     def segment_single_image(self, data):
-        self.model = UNet(num_classes=self.config["num_classes"], in_channels=self.config["in_channels"])
-        self.device = torch.device(self.config["device"] if torch.cuda.is_available() else "cpu")
+        self.model = UNet(num_classes=self.config.num_classes, in_channels=self.config.in_channels)
+        self.device = torch.device(self.config.device if torch.cuda.is_available() else "cpu")
 
         # a model must be present and loaded in here
-        if self.config["model_dir"] == '':
+        if self.config.model_dir == '':
             print('model_dir is empty, please provide directory to load checkpoint.')
         else:
-            self.load_checkpoint(name=self.config["model_dir"], save_types=("model"))
+            self.load_checkpoint(name=self.config.model_dir, save_types=("model",))
 
         self.elog.print("=====SEGMENT_SINGLE_IMAGE=====")
         self.model.eval()
@@ -229,10 +223,10 @@ class UNetExperiment(PytorchExperiment):
 
             ######
             # for CUDA (also works on CPU) split into batches
-            blocksize = self.config["batch_size"]
+            blocksize = self.config.batch_size
 
             # number_of_elements = round(data.shape[0]/blocksize+0.5)     # make blocks large enough to not lose any slices
-            chunks = [data[i:i + blocksize, ::, ::, ::] for i in range(0, data.shape[0], blocksize)]
+            chunks = [data[i:i+blocksize, ::, ::, ::] for i in range(0, data.shape[0], blocksize)]
             pred_list = []
             for data_batch in chunks:
                 mr_data = data_batch.float().to(self.device)
