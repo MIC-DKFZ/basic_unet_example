@@ -1,38 +1,7 @@
 googledrivedownloader==0.4
+opencv-python==4.4.0.42
+batchgenerators==0.20.1
 MedPy==0.4.0
-SimpleITK==1.2.0
-torch==1.1.0
-torchfile==0.1.0
-trixi==0.1.2.1
-batchgenerators==0.19.3
-
-# Workaround for numpy multiprocessing issues. See (https://github.com/numpy/numpy/issues/11826#issuecomment-425087772)
-numpy==1.14.5
-
-# Workaround for scipy issues
-scipy==1.1.0
-
-# Workaround for slackclient version issues
-slackclient==2.0.0
-
-# Fix compatibility issues
-certifi==2019.9.11
-joblib==0.14.0
-llvmlite==0.30.0
-matplotlib==3.1.1
-multidict==4.5.2
-numba==0.46.0
-opencv-python==4.1.1.26
-Pillow==6.2.1
-plotly==4.3.0
-protobuf==3.10.0
-pycares==3.0.0
-pyparsing==2.4.5
-scikit-learn==0.21.3
-six==1.13.0
-tensorboardX==1.9
-torchvision==0.4.2
-urllib3==1.25.7
-websocket-client==0.56.0
-yarl==1.3.0
-
+torch==1.6.0
+trixi==0.1.2.2
+tensorboard==2.3.0
