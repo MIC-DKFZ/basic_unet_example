@@ -15,7 +15,9 @@ If you have any questions or issues or you encounter a bug, feel free to contact
 
 ## How to set it up
 The example is very easy to use. Just create a new virtual environment in python and install the requirements. 
-This example requires python3. It was implemented with python 3.5.
+This example requires python3. It was implemented with python 3.5. 
+
+> **WARNING**: The newest supported version is python 3.7.9. For newer python versions there are some requirements that are not available in the needed version.
 ```
 pip3 install -r requirements.txt
 ```

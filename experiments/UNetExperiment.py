@@ -122,7 +122,6 @@ class UNetExperiment(PytorchExperiment):
 
                 self.clog.show_image_grid(data.float().cpu(), name="data", normalize=True, scale_each=True, n_iter=epoch)
                 self.clog.show_image_grid(target.float().cpu(), name="mask", title="Mask", n_iter=epoch)
-                self.clog.show_image_grid(torch.argmax(pred.cpu(), dim=1, keepdim=True), name="unt_argmax", title="Unet", n_iter=epoch)
                 self.clog.show_image_grid(pred.cpu()[:, 1:2, ], name="unt", normalize=True, scale_each=True, n_iter=epoch)
 
             batch_counter += 1
@@ -156,7 +155,6 @@ class UNetExperiment(PytorchExperiment):
 
         self.clog.show_image_grid(data.float().cpu(), name="data_val", normalize=True, scale_each=True, n_iter=epoch)
         self.clog.show_image_grid(target.float().cpu(), name="mask_val", title="Mask", n_iter=epoch)
-        self.clog.show_image_grid(torch.argmax(pred.data.cpu(), dim=1, keepdim=True), name="unt_argmax_val", title="Unet", n_iter=epoch)
         self.clog.show_image_grid(pred.data.cpu()[:, 1:2, ], name="unt_val", normalize=True, scale_each=True, n_iter=epoch)
 
     def test(self):
