@@ -6,7 +6,7 @@ trixi==0.1.2.1
 batchgenerators==0.19.3
 
 # Workaround for scipy issues
-scipy==1.1.0
+scipy==1.10.0
 
 # Workaround for slackclient version issues
 slackclient==2.0.0
